@@ -84,21 +84,22 @@ function! ag#Ag(cmd, args)
     let g:ag_format="%f:%l:%c:%m"
   endif
 
-  let l:grepprg_bak=&grepprg
-  let l:grepformat_bak=&grepformat
-  let l:t_ti_bak=&t_ti
-  let l:t_te_bak=&t_te
+  let l:grepprg_bak    = &l:grepprg
+  let l:grepformat_bak = &grepformat
+  let l:t_ti_bak       = &t_ti
+  let l:t_te_bak       = &t_te
+
   try
-    let &grepprg=g:ag_prg
-    let &grepformat=g:ag_format
+    let &l:grepprg  = g:ag_prg
+    let &grepformat = g:ag_format
     set t_ti=
     set t_te=
     silent! execute a:cmd . " " . escape(l:grepargs, '|')
   finally
-    let &grepprg=l:grepprg_bak
-    let &grepformat=l:grepformat_bak
-    let &t_ti=l:t_ti_bak
-    let &t_te=l:t_te_bak
+    let &l:grepprg  = l:grepprg_bak
+    let &grepformat = l:grepformat_bak
+    let &t_ti       = l:t_ti_bak
+    let &t_te       = l:t_te_bak
   endtry
 
   if a:cmd =~# '^l'
