@@ -146,18 +146,14 @@ function! ag#Ag(cmd, args)
       nnoremap <buffer> <silent> T  <C-w><CR><C-w>TgT<C-W><C-W>
       nnoremap <buffer> <silent> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
 
-      exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>:' . l:matches_window_prefix .'close<CR>'
-      exe 'nnoremap <buffer> <silent> go <CR>:' . l:matches_window_prefix . 'open<CR>'
-      exe 'nnoremap <buffer> <silent> q  :' . l:matches_window_prefix . 'close<CR>'
+      let l:closecmd = l:matches_window_prefix . 'close'
+      let l:opencmd  = l:matches_window_prefix . 'open'
 
-      exe 'nnoremap <buffer> <silent> gv :let b:height=winheight(0)<CR><C-w><CR><C-w>H:' . l:matches_window_prefix . 'open<CR><C-w>J:exe printf(":normal %d\<lt>c-w>_", b:height)<CR>'
-      " Interpretation:
-      " :let b:height=winheight(0)<CR>                      Get the height of the quickfix/location list window
-      " <CR><C-w>                                           Open the current item in a new split
-      " <C-w>H                                              Slam the newly opened window against the left edge
-      " :copen<CR> -or- :lopen<CR>                          Open either the quickfix window or the location list (whichever we were using)
-      " <C-w>J                                              Slam the quickfix/location list window against the bottom edge
-      " :exe printf(":normal %d\<lt>c-w>_", b:height)<CR>   Restore the quickfix/location list window's height from before we opened the match
+      exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>' . l:closecmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> go <CR>:' . l:opencmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> q ' . l:closecmd . '<CR>'
+
+      exe 'nnoremap <buffer> <silent> gv :call <SID>PreviewVertical("' . l:opencmd . '")<CR>'
 
       if g:ag_mapping_message && l:apply_mappings
         echom "ag.vim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
@@ -175,7 +171,16 @@ function! ag#AgFromSearch(cmd, args)
   call ag#Ag(a:cmd, '"' .  search .'" '. a:args)
 endfunction
 
-function! ag#GetDocLocations()
+function! ag#AgHelp(cmd,args)
+  let args = a:args.' '.s:GetDocLocations()
+  call ag#Ag(a:cmd,args)
+endfunction
+
+"-----------------------------------------------------------------------------
+" Private API
+"-----------------------------------------------------------------------------
+
+function! s:GetDocLocations()
   let dp = ''
   for p in split(&runtimepath,',')
     let p = p.'/doc/'
@@ -186,7 +191,13 @@ function! ag#GetDocLocations()
   return dp
 endfunction
 
-function! ag#AgHelp(cmd,args)
-  let args = a:args.' '.ag#GetDocLocations()
-  call ag#Ag(a:cmd,args)
+" Called from within a list window, preserves its height after shuffling vsplit.
+" The parameter indicates whether list was opened as copen or lopen.
+function! s:PreviewVertical(opencmd)
+  let b:height = winheight(0)    " Get the height of list window
+  exec "normal! \<C-w>\<CR>"   | " Open current item in a new split
+  wincmd H                       " Slam newly opened window against the left edge
+  exec a:opencmd               | " Move back to the list window
+  wincmd J                       " Slam the list window against the bottom edge
+  exec 'resize' b:height       | " Restore the list window's height
 endfunction
