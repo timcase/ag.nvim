@@ -1,5 +1,10 @@
 " NOTE: You must, of course, install ag / the_silver_searcher
 
+if exists('g:autoloaded_ag')
+  finish
+endif
+let g:autoloaded_ag = 1
+
 " FIXME: Delete deprecated options below on or after 15-7 (6 months from when they were changed) {{{
 
 if exists("g:agprg")
@@ -61,6 +66,12 @@ endfunction
 function! ag#Ag(cmd, args)
   let l:ag_executable = get(split(g:ag_prg, " "), 0)
 
+  if a:cmd =~# '^l'
+    let l:using_loclist = 1
+  else
+    let l:using_loclist = 0
+  endif
+
   " Ensure that `ag` is installed
   if !executable(l:ag_executable)
     echoe "Ag command '" . l:ag_executable . "' was not found. Is the silver searcher installed and on your $PATH?"
@@ -102,13 +113,13 @@ function! ag#Ag(cmd, args)
     let &t_te       = l:t_te_bak
   endtry
 
-  if a:cmd =~# '^l'
+  if l:using_loclist
     let l:match_count = len(getloclist(winnr()))
   else
     let l:match_count = len(getqflist())
   endif
 
-  if a:cmd =~# '^l' && l:match_count
+  if l:using_loclist && l:match_count
     exe g:ag_lhandler
     let l:apply_mappings = g:ag_apply_lmappings
     let l:matches_window_prefix = 'l' " we're using the location list
