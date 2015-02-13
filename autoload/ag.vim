@@ -149,9 +149,9 @@ function! ag#Ag(cmd, args)
       let l:closecmd = l:matches_window_prefix . 'close'
       let l:opencmd  = l:matches_window_prefix . 'open'
 
-      exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>' . l:closecmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>:' . l:closecmd . '<CR>'
       exe 'nnoremap <buffer> <silent> go <CR>:' . l:opencmd . '<CR>'
-      exe 'nnoremap <buffer> <silent> q ' . l:closecmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> q :' . l:closecmd . '<CR>'
 
       exe 'nnoremap <buffer> <silent> gv :call <SID>PreviewVertical("' . l:opencmd . '")<CR>'
 
