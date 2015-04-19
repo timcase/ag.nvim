@@ -33,6 +33,11 @@ You can specify a custom ag name and path in your .vimrc like so:
 
     let g:agprg="<custom-ag-path-goes-here> --column"
 
+You can configure ag.vim to always start searching from your project root
+instead of the cwd
+
+    let g:ag_working_path_mode="r"
+
 ## Usage ##
 
     :Ag [options] {pattern} [{directory}]
