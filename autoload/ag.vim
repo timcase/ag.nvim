@@ -51,6 +51,13 @@ if !exists("g:ag_working_path_mode")
     let g:ag_working_path_mode = 'c'
 endif
 
+if has('nvim')
+    augroup agSearchNvim
+        au!
+        au JobActivity agsearch call ag#handleAsyncOutput()
+    augroup END
+endif
+
 function! ag#AgBuffer(cmd, args)
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:files = []
@@ -89,6 +96,7 @@ function! ag#Ag(cmd, args)
     let g:ag_format="%f:%l:%c:%m"
   endif
 
+  let l:cmd = a:cmd . " " . escape(l:grepargs, '|')
   let l:grepprg_bak=&grepprg
   let l:grepformat_bak=&grepformat
   let l:t_ti_bak=&t_ti
@@ -106,11 +114,11 @@ function! ag#Ag(cmd, args)
       catch
         echom 'Failed to change directory to:'.l:cwd
       finally
-        silent! execute a:cmd . " " . escape(l:grepargs, '|')
+        call ag#executeCmd(l:cmd)
         exe "lcd ".l:cwd_back
       endtry
     else " Someone chose an undefined value or 'c' so we revert to the default
-      silent! execute a:cmd . " " . escape(l:grepargs, '|')
+      call ag#executeCmd(l:cmd)
     endif
   finally
     let &grepprg=l:grepprg_bak
@@ -119,6 +127,15 @@ function! ag#Ag(cmd, args)
     let &t_te=l:t_te_bak
   endtry
 
+  if !has('nvim')
+    call ag#handleOutput(l:cmd, a:args)
+    return
+  endif
+
+  call ag#handleOutput(l:cmd, a:args)
+endfunction
+
+function! ag#handleOutput(cmd, args)
   if a:cmd =~# '^l'
     let l:match_count = len(getloclist(winnr()))
   else
@@ -174,6 +191,19 @@ function! ag#Ag(cmd, args)
   endif
 endfunction
 
+function! ag#handleAsyncOutput()
+    " Do stuff
+    call ag#handle_output()
+endfunction
+
+function! ag#executeCmd(cmd)
+  if has('nvim')
+    silent! execute a:cmd
+  else
+    silent! execute a:cmd
+  endif
+endfunction
+
 function! ag#AgFromSearch(cmd, args)
   let search =  getreg('/')
   " translate vim regular expression to perl regular expression.
@@ -198,7 +228,7 @@ function! ag#AgHelp(cmd,args)
 endfunction
 
 function! ag#guessProjectRoot()
-  let searchdir = '' 
+  let searchdir = ''
   let splitsearchdir = split(getcwd(), "/")
 
   while len(splitsearchdir) > 2
