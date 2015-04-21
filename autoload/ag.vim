@@ -56,6 +56,7 @@ let s:job_number = 0
 let s:cmd = ''
 let s:args = ''
 let s:cwd = getcwd()
+let s:data = []
 
 function! ag#AgBuffer(cmd, args)
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
@@ -112,7 +113,7 @@ function! ag#Ag(cmd, args)
       let l:cwd_back = getcwd()
       let s:cwd = ag#guessProjectRoot()
       try
-        exe "lcd ".l:cwd
+        exe "lcd ".s:cwd
       catch
       finally
         call s:executeCmd(l:grepargs)
@@ -197,10 +198,16 @@ function! s:handleAsyncOutput(job_id, data, event)
     return
   end
 
+  " Store all the input we get from the shell
   if a:event ==# 'stdout'
+    let s:data = s:data+a:data
+
+  " When the program has finished running we parse the data
+  elseif a:event ==# 'exit'
+    echom "Ag search finished"
     let l:expandeddata = []
     " Expand the path of the result so we can jump to it
-    for result in a:data
+    for result in s:data
       call add(l:expandeddata, s:cwd.'/'.result)
     endfor
     " Todo check if this empty last element always exists or not
@@ -216,12 +223,8 @@ function! s:handleAsyncOutput(job_id, data, event)
       " Add to quickfix list
       cgete l:expandeddata
     endif
-
-  elseif a:event ==# 'exit'
-    echom "Ag search finished"
+    call s:handleOutput()
   endif
-
-  call s:handleOutput()
 endfunction
 
 function! s:executeCmd(grepargs)
@@ -235,6 +238,9 @@ function! s:executeCmd(grepargs)
     call jobstop(s:job_number)
   catch
   endtry
+
+  " Clear all of the old captures
+  let s:data = []
 
   " All types of exiting the job should be directed to handleAsyncOutput
   let s:callbacks = {
