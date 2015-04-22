@@ -210,20 +210,26 @@ function! s:handleAsyncOutput(job_id, data, event)
     for result in s:data
       call add(l:expandeddata, s:cwd.'/'.result)
     endfor
-    " Todo check if this empty last element always exists or not
-    " Splice the last element of our list when it's a non-find
-    if l:expandeddata[-1] =~? '\/\/$'
-      let l:expandeddata = l:expandeddata[0:-2]
-    endif
 
-    if s:cmd =~# '^l'
-      " Add to location list
-      lgete l:expandeddata
+    if len(l:expandeddata) " Only if we actually find something
+
+      " Todo check if this empty last element always exists or not
+      " Splice the last element of our list when it's a non-find
+      if l:expandeddata[-1] =~? '\/\/$'
+        let l:expandeddata = l:expandeddata[0:-2]
+      endif
+
+      if s:cmd =~# '^l'
+        " Add to location list
+        lgete l:expandeddata
+      else
+        " Add to quickfix list
+        cgete l:expandeddata
+      endif
+      call s:handleOutput()
     else
-      " Add to quickfix list
-      cgete l:expandeddata
+      echom "No matches for '".s:args."'"
     endif
-    call s:handleOutput()
   endif
 endfunction
 
