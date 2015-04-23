@@ -111,7 +111,7 @@ function! ag#Ag(cmd, args)
     set t_te=
     if g:ag_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
       let l:cwd_back = getcwd()
-      let s:cwd = ag#guessProjectRoot()
+      let s:cwd = s:guessProjectRoot()
       try
         exe "lcd ".s:cwd
       catch
@@ -285,19 +285,18 @@ function! ag#AgHelp(cmd,args)
   call ag#Ag(a:cmd,args)
 endfunction
 
-function! ag#guessProjectRoot()
-  let searchdir = ''
-  let splitsearchdir = split(getcwd(), "/")
+function! s:guessProjectRoot()
+  let l:splitsearchdir = split(getcwd(), "/")
 
-  while len(splitsearchdir) > 2
-    let searchdir = '/'.join(splitsearchdir, '/').'/'
-    for marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
+  while len(l:splitsearchdir) > 2
+    let l:searchdir = '/'.join(l:splitsearchdir, '/').'/'
+    for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
       " found it! Return the dir
-      if filereadable(searchdir.marker) || isdirectory(searchdir.marker)
-        return searchdir
+      if filereadable(l:searchdir.l:marker) || isdirectory(l:searchdir.l:marker)
+        return l:searchdir
       endif
     endfor
-    let splitsearchdir = splitsearchdir[0:-2] " Splice the list to get rid of the tail directory
+    let l:splitsearchdir = l:splitsearchdir[0:-2] " Splice the list to get rid of the tail directory
   endwhile
 
   " Nothing found, fallback to current working dir
