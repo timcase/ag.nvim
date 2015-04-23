@@ -81,7 +81,7 @@ The location of the Ag program, and any options you want passed to it before
 searching. Default: "ag --vimgrep" (for parsable output). Example: >
   let g:ag_prg="ag --vimgrep --smart-case"
 <
-Note: the `--vimgrep` option was added in Ag 0.25.0. If ag.vim detects that
+Note: the `--vimgrep` option was added in Ag 0.25.0. If ag.nvim detects that
 you're using a lower version, the following default will be used instead: >
   let g:ag_prg="ag --column --nogroup --noheading"
 <
@@ -154,7 +154,7 @@ e                   open file and close the quickfix window.
 
 o                   open file (same as enter).
 
-go                  preview file (open but maintain focus on ag.vim results).
+go                  preview file (open but maintain focus on ag.nvim results).
 
 t                   open in a new tab.
 
