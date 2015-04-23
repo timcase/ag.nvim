@@ -1,5 +1,10 @@
 " NOTE: You must, of course, install ag / the_silver_searcher
 
+if exists('g:autoloaded_ag')
+  finish
+endif
+let g:autoloaded_ag = 1
+
 " FIXME: Delete deprecated options below on or after 15-7 (6 months from when they were changed) {{{
 
 if exists("g:agprg")
@@ -101,12 +106,14 @@ function! ag#Ag(cmd, args)
   let s:cmd = a:cmd . " " . escape(l:grepargs, '|')
 
   let l:grepprg_bak=&grepprg
+  let l:grepprg_bak    = &l:grepprg
   let l:grepformat_bak=&grepformat
   let l:t_ti_bak=&t_ti
   let l:t_te_bak=&t_te
+
   try
-    let &grepprg=g:ag_prg
-    let &grepformat=g:ag_format
+    let &l:grepprg  = g:ag_prg
+    let &grepformat = g:ag_format
     set t_ti=
     set t_te=
     if g:ag_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
@@ -123,10 +130,10 @@ function! ag#Ag(cmd, args)
       call s:executeCmd(l:grepargs)
     endif
   finally
-    let &grepprg=l:grepprg_bak
-    let &grepformat=l:grepformat_bak
-    let &t_ti=l:t_ti_bak
-    let &t_te=l:t_te_bak
+    let &l:grepprg  = l:grepprg_bak
+    let &grepformat = l:grepformat_bak
+    let &t_ti       = l:t_ti_bak
+    let &t_te       = l:t_te_bak
   endtry
 
   " No neovim, when we finally get here we already have the output so run handleOutput
@@ -135,6 +142,22 @@ function! ag#Ag(cmd, args)
     return
   endif
 endfunction
+
+function! ag#AgFromSearch(cmd, args)
+  let search =  getreg('/')
+  " translate vim regular expression to perl regular expression.
+  let search = substitute(search,'\(\\<\|\\>\)','\\b','g')
+  call ag#Ag(a:cmd, '"' .  search .'" '. a:args)
+endfunction
+
+function! ag#AgHelp(cmd,args)
+  let args = a:args.' '.s:GetDocLocations()
+  call ag#Ag(a:cmd,args)
+endfunction
+
+"-----------------------------------------------------------------------------
+" Private API
+"-----------------------------------------------------------------------------
 
 function! s:handleOutput()
   if s:cmd =~# '^l'
@@ -163,25 +186,21 @@ function! s:handleOutput()
 
   if l:match_count
     if l:apply_mappings
-      nnoremap <silent> <buffer> h  <C-W><CR><C-w>K
-      nnoremap <silent> <buffer> H  <C-W><CR><C-w>K<C-w>b
-      nnoremap <silent> <buffer> o  <CR>
-      nnoremap <silent> <buffer> t  <C-w><CR><C-w>T
-      nnoremap <silent> <buffer> T  <C-w><CR><C-w>TgT<C-W><C-W>
-      nnoremap <silent> <buffer> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
+      nnoremap <buffer> <silent> h  <C-W><CR><C-w>K
+      nnoremap <buffer> <silent> H  <C-W><CR><C-w>K<C-w>b
+      nnoremap <buffer> <silent> o  <CR>
+      nnoremap <buffer> <silent> t  <C-w><CR><C-w>T
+      nnoremap <buffer> <silent> T  <C-w><CR><C-w>TgT<C-W><C-W>
+      nnoremap <buffer> <silent> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
 
-      exe 'nnoremap <silent> <buffer> e <CR><C-w><C-w>:' . l:matches_window_prefix .'close<CR>'
-      exe 'nnoremap <silent> <buffer> go <CR>:' . l:matches_window_prefix . 'open<CR>'
-      exe 'nnoremap <silent> <buffer> q  :' . l:matches_window_prefix . 'close<CR>'
+      let l:closecmd = l:matches_window_prefix . 'close'
+      let l:opencmd  = l:matches_window_prefix . 'open'
 
-      exe 'nnoremap <silent> <buffer> gv :let b:height=winheight(0)<CR><C-w><CR><C-w>H:' . l:matches_window_prefix . 'open<CR><C-w>J:exe printf(":normal %d\<lt>c-w>_", b:height)<CR>'
-      " Interpretation:
-      " :let b:height=winheight(0)<CR>                      Get the height of the quickfix/location list window
-      " <CR><C-w>                                           Open the current item in a new split
-      " <C-w>H                                              Slam the newly opened window against the left edge
-      " :copen<CR> -or- :lopen<CR>                          Open either the quickfix window or the location list (whichever we were using)
-      " <C-w>J                                              Slam the quickfix/location list window against the bottom edge
-      " :exe printf(":normal %d\<lt>c-w>_", b:height)<CR>   Restore the quickfix/location list window's height from before we opened the match
+      exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>:' . l:closecmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> go <CR>:' . l:opencmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> q :' . l:closecmd . '<CR>'
+
+      exe 'nnoremap <buffer> <silent> gv :call <SID>PreviewVertical("' . l:opencmd . '")<CR>'
 
       if g:ag_mapping_message && l:apply_mappings
         echom "ag.nvim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
@@ -262,14 +281,8 @@ function! s:executeCmd(grepargs)
   let s:job_number = jobstart(['sh', '-c', l:agcmd], extend({'shell': 'shell 1'}, s:callbacks))
 endfunction
 
-function! ag#AgFromSearch(cmd, args)
-  let search =  getreg('/')
-  " translate vim regular expression to perl regular expression.
-  let search = substitute(search,'\(\\<\|\\>\)','\\b','g')
-  call ag#Ag(a:cmd, '"' .  search .'" '. a:args)
-endfunction
 
-function! ag#GetDocLocations()
+function! s:GetDocLocations()
   let dp = ''
   for p in split(&runtimepath,',')
     let p = p.'/doc/'
@@ -280,9 +293,15 @@ function! ag#GetDocLocations()
   return dp
 endfunction
 
-function! ag#AgHelp(cmd,args)
-  let args = a:args.' '.ag#GetDocLocations()
-  call ag#Ag(a:cmd,args)
+" Called from within a list window, preserves its height after shuffling vsplit.
+" The parameter indicates whether list was opened as copen or lopen.
+function! s:PreviewVertical(opencmd)
+  let b:height = winheight(0)    " Get the height of list window
+  exec "normal! \<C-w>\<CR>"   | " Open current item in a new split
+  wincmd H                       " Slam newly opened window against the left edge
+  exec a:opencmd               | " Move back to the list window
+  wincmd J                       " Slam the list window against the bottom edge
+  exec 'resize' b:height       | " Restore the list window's height
 endfunction
 
 function! s:guessProjectRoot()
