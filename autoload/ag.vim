@@ -7,6 +7,10 @@ let s:args = ''
 let s:cwd = getcwd()
 let s:data = []
 
+"-----------------------------------------------------------------------------
+" Public API
+"-----------------------------------------------------------------------------
+
 function! ag#AgBuffer(cmd, args)
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:files = []
@@ -97,6 +101,11 @@ endfunction
 function! ag#AgHelp(cmd,args)
   let args = a:args.' '.s:GetDocLocations()
   call ag#Ag(a:cmd,args)
+endfunction
+
+function! ag#AgFile(cmd, args)
+  let l:args = ' -g ' . a:args
+  call ag#Ag(a:cmd, args)
 endfunction
 
 "-----------------------------------------------------------------------------

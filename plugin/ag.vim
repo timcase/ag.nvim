@@ -66,7 +66,7 @@ command! -bang -nargs=* -complete=file AgFromSearch call ag#AgFromSearch('grep<b
 command! -bang -nargs=* -complete=file LAg call ag#Ag('lgrep<bang>', <q-args>)
 command! -bang -nargs=* -complete=file LAgBuffer call ag#AgBuffer('lgrep<bang>',<q-args>)
 command! -bang -nargs=* -complete=file LAgAdd call ag#Ag('lgrepadd<bang>', <q-args>)
-command! -bang -nargs=* -complete=file AgFile call ag#Ag('grep<bang> -g', <q-args>)
+command! -bang -nargs=* -complete=file AgFile call ag#AgFile('grep<bang>', <q-args>)
 command! -bang -nargs=* -complete=help AgHelp call ag#AgHelp('grep<bang>',<q-args>)
 command! -bang -nargs=* -complete=help LAgHelp call ag#AgHelp('lgrep<bang>',<q-args>)
 
