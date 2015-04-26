@@ -226,17 +226,18 @@ function! s:handleAsyncOutput(job_id, data, event)
     echom "Ag search finished"
     let l:expandeddata = []
     " Expand the path of the result so we can jump to it
-    for result in s:data
-      call add(l:expandeddata, s:cwd.'/'.result)
+    for l:result in s:data
+      if( l:result !~? "^/home/" ) " Only expand when the path is not a full path already
+        let l:result = s:cwd.'/'.l:result
+      endif
+      let l:result = substitute(l:result , '//', '/' ,'g') " Get rid of excess slashes in filename if present
+      call add(l:expandeddata, l:result)
     endfor
 
     if len(l:expandeddata) " Only if we actually find something
 
-      " Todo check if this empty last element always exists or not
-      " Splice the last element of our list when it's a non-find
-      if l:expandeddata[-1] =~? '\/\/$'
-        let l:expandeddata = l:expandeddata[0:-2]
-      endif
+      " The last element is always bogus for some reason
+      let l:expandeddata = l:expandeddata[0:-2]
 
       if s:cmd =~# '^l'
         " Add to location list
