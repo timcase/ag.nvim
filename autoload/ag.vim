@@ -2,7 +2,7 @@
 "
 " Variables required to manage async
 let s:job_number = 0
-let s:cmd = ''
+let s:locListCommand = 0
 let s:args = ''
 let s:cwd = getcwd()
 let s:data = []
@@ -10,18 +10,6 @@ let s:data = []
 "-----------------------------------------------------------------------------
 " Public API
 "-----------------------------------------------------------------------------
-
-function! ag#AgBuffer(cmd, args)
-  let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  let l:files = []
-  for buf in l:bufs
-    let l:file = fnamemodify(bufname(buf), ':p')
-    if !isdirectory(l:file)
-      call add(l:files, l:file)
-    endif
-  endfor
-  call ag#Ag(a:cmd, a:args . ' ' . join(l:files, ' '))
-endfunction
 
 function! ag#Ag(cmd, args)
   let l:ag_executable = get(split(g:ag_prg, " "), 0)
@@ -50,32 +38,39 @@ function! ag#Ag(cmd, args)
   endif
 
   " Set the script variables that will later be used by the async callback
-  let s:args = a:args
-  let s:cmd = a:cmd . " " . escape(l:grepargs, '|')
+  let s:args = l:grepargs
+  let l:cmd = a:cmd . " " . escape(l:grepargs, '|')
+  if l:cmd =~# '^l'
+    let s:locListCommand = 1
+  else
+    let s:locListCommand = 0
+  endif
 
+  " Store the backups
   let l:grepprg_bak=&grepprg
   let l:grepprg_bak    = &l:grepprg
   let l:grepformat_bak=&grepformat
   let l:t_ti_bak=&t_ti
   let l:t_te_bak=&t_te
 
+  " Try to change all the system variables and run ag in the right folder
   try
     let &l:grepprg  = g:ag_prg
     let &grepformat = g:ag_format
-    set t_ti=
+    set t_ti=                      " These 2 commands make ag.vim not bleed in terminal
     set t_te=
-    if g:ag_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
+    if g:ag_working_path_mode ==? 'r' " Try to find the project root for current buffer
       let l:cwd_back = getcwd()
       let s:cwd = s:guessProjectRoot()
       try
         exe "lcd ".s:cwd
       catch
       finally
-        call s:executeCmd(l:grepargs)
+        call s:executeCmd(l:grepargs, l:cmd)
         exe "lcd ".l:cwd_back
       endtry
-    else " Someone chose an undefined value or 'c' so we revert to the default
-      call s:executeCmd(l:grepargs)
+    else " Someone chose an undefined value or 'c' so we revert to searching in the cwd
+      call s:executeCmd(l:grepargs, l:cmd)
     endif
   finally
     let &l:grepprg  = l:grepprg_bak
@@ -91,16 +86,28 @@ function! ag#Ag(cmd, args)
   endif
 endfunction
 
+function! ag#AgBuffer(cmd, args)
+  let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  let l:files = []
+  for buf in l:bufs
+    let l:file = fnamemodify(bufname(buf), ':p')
+    if !isdirectory(l:file)
+      call add(l:files, l:file)
+    endif
+  endfor
+  call ag#Ag(a:cmd, a:args . ' ' . join(l:files, ' '))
+endfunction
+
 function! ag#AgFromSearch(cmd, args)
-  let search =  getreg('/')
+  let l:search =  getreg('/')
   " translate vim regular expression to perl regular expression.
-  let search = substitute(search,'\(\\<\|\\>\)','\\b','g')
-  call ag#Ag(a:cmd, '"' .  search .'" '. a:args)
+  let l:search = substitute(l:search,'\(\\<\|\\>\)','\\b','g')
+  call ag#Ag(a:cmd, '"' .  l:search .'" '. a:args)
 endfunction
 
 function! ag#AgHelp(cmd,args)
-  let args = a:args.' '.s:GetDocLocations()
-  call ag#Ag(a:cmd,args)
+  let l:args = a:args.' '.s:GetDocLocations()
+  call ag#Ag(a:cmd,l:args)
 endfunction
 
 function! ag#AgFile(cmd, args)
@@ -113,31 +120,31 @@ endfunction
 "-----------------------------------------------------------------------------
 
 function! s:handleOutput()
-  if s:cmd =~# '^l'
+  if s:locListCommand
     let l:match_count = len(getloclist(winnr()))
   else
     let l:match_count = len(getqflist())
   endif
 
-  if s:cmd =~# '^l' && l:match_count
-    exe g:ag_lhandler
-    let l:apply_mappings = g:ag_apply_lmappings
-    let l:matches_window_prefix = 'l' " we're using the location list
-  elseif l:match_count
-    exe g:ag_qhandler
-    let l:apply_mappings = g:ag_apply_qmappings
-    let l:matches_window_prefix = 'c' " we're using the quickfix window
-  endif
-
-  " If highlighting is on, highlight the search keyword.
-  if exists("g:ag_highlight")
-    let @/=s:args
-    set hlsearch
-  end
-
-  redraw!
-
   if l:match_count
+    if s:locListCommand
+      exe g:ag_lhandler
+      let l:apply_mappings = g:ag_apply_lmappings
+      let l:matches_window_prefix = 'l' " we're using the location list
+    else
+      exe g:ag_qhandler
+      let l:apply_mappings = g:ag_apply_qmappings
+      let l:matches_window_prefix = 'c' " we're using the quickfix window
+    endif
+
+    " If highlighting is on, highlight the search keyword.
+    if exists("g:ag_highlight")
+      let @/ = matchstr(s:args, "\\v(-)\@<!(\<)\@<=\\w+|['\"]\\zs.{-}\\ze['\"]")
+      call feedkeys(":let &hlsearch=1 \| echo \<CR>", "n")
+    end
+
+    redraw! " Regular vim needs some1 to tell it to redraw
+
     if l:apply_mappings
       nnoremap <buffer> <silent> h  <C-W><CR><C-w>K
       nnoremap <buffer> <silent> H  <C-W><CR><C-w>K<C-w>b
@@ -192,7 +199,7 @@ function! s:handleAsyncOutput(job_id, data, event)
       " The last element is always bogus for some reason
       let l:expandeddata = l:expandeddata[0:-2]
 
-      if s:cmd =~# '^l'
+      if s:locListCommand
         " Add to location list
         lgete l:expandeddata
       else
@@ -206,9 +213,9 @@ function! s:handleAsyncOutput(job_id, data, event)
   endif
 endfunction
 
-function! s:executeCmd(grepargs)
+function! s:executeCmd(grepargs, cmd)
   if !has('nvim')
-    silent! execute s:cmd
+    silent! execute a:cmd
     return
   endif
 
