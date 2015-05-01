@@ -11,8 +11,8 @@ let s:data = []
 " Public API
 "-----------------------------------------------------------------------------
 
-function! ag#Ag(cmd, args)
-  let l:ag_executable = get(split(g:ag_prg, " "), 0)
+function! ag#Ag(cmd, args) abort
+  let l:ag_executable = get(split(g:ag_prg, ' '), 0)
 
   " Ensure that `ag` is installed
   if !executable(l:ag_executable)
@@ -22,24 +22,22 @@ function! ag#Ag(cmd, args)
 
   " If no pattern is provided, search for the word under the cursor
   if empty(a:args)
-    let l:grepargs = expand("<cword>")
+    let l:grepargs = expand('<cword>')
   else
     let l:grepargs = a:args . join(a:000, ' ')
   end
 
   " Format, used to manage column jump
-  if a:cmd =~# '-g$'
-    let s:ag_format_backup=g:ag_format
-    let g:ag_format="%f"
-  elseif exists("s:ag_format_backup")
-    let g:ag_format=s:ag_format_backup
-  elseif !exists("g:ag_format")
-    let g:ag_format="%f:%l:%c:%m"
+  if a:args =~# '-g'
+    let s:ag_format_backup = g:ag_format
+    let g:ag_format = '%f'
+  elseif exists('s:ag_format_backup')
+    let g:ag_format = s:ag_format_backup
   endif
 
   " Set the script variables that will later be used by the async callback
   let s:args = l:grepargs
-  let l:cmd = a:cmd . " " . escape(l:grepargs, '|')
+  let l:cmd = a:cmd . ' ' . escape(l:grepargs, '|')
   if l:cmd =~# '^l'
     let s:locListCommand = 1
   else
@@ -47,11 +45,11 @@ function! ag#Ag(cmd, args)
   endif
 
   " Store the backups
-  let l:grepprg_bak=&grepprg
-  let l:grepprg_bak    = &l:grepprg
-  let l:grepformat_bak=&grepformat
-  let l:t_ti_bak=&t_ti
-  let l:t_te_bak=&t_te
+  let l:grepprg_bak = &grepprg
+  let l:grepprg_bak = &l:grepprg
+  let l:grepformat_bak = &grepformat
+  let l:t_ti_bak = &t_ti
+  let l:t_te_bak = &t_te
 
   " Try to change all the system variables and run ag in the right folder
   try
@@ -63,20 +61,20 @@ function! ag#Ag(cmd, args)
       let l:cwd_back = getcwd()
       let s:cwd = s:guessProjectRoot()
       try
-        exe "lcd ".s:cwd
+        exe 'lcd '.s:cwd
       catch
       finally
         call s:executeCmd(l:grepargs, l:cmd)
-        exe "lcd ".l:cwd_back
+        exe 'lcd '.l:cwd_back
       endtry
     else " Someone chose an undefined value or 'c' so we revert to searching in the cwd
       call s:executeCmd(l:grepargs, l:cmd)
     endif
   finally
-    let &l:grepprg  = l:grepprg_bak
+    let &l:grepprg = l:grepprg_bak
     let &grepformat = l:grepformat_bak
-    let &t_ti       = l:t_ti_bak
-    let &t_te       = l:t_te_bak
+    let &t_ti = l:t_ti_bak
+    let &t_te = l:t_te_bak
   endtry
 
   " No neovim, when we finally get here we already have the output so run handleOutput
@@ -86,7 +84,7 @@ function! ag#Ag(cmd, args)
   endif
 endfunction
 
-function! ag#AgBuffer(cmd, args)
+function! ag#AgBuffer(cmd, args) abort
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:files = []
   for buf in l:bufs
@@ -98,19 +96,19 @@ function! ag#AgBuffer(cmd, args)
   call ag#Ag(a:cmd, a:args . ' ' . join(l:files, ' '))
 endfunction
 
-function! ag#AgFromSearch(cmd, args)
+function! ag#AgFromSearch(cmd, args) abort
   let l:search =  getreg('/')
   " translate vim regular expression to perl regular expression.
   let l:search = substitute(l:search,'\(\\<\|\\>\)','\\b','g')
   call ag#Ag(a:cmd, '"' .  l:search .'" '. a:args)
 endfunction
 
-function! ag#AgHelp(cmd,args)
+function! ag#AgHelp(cmd,args) abort
   let l:args = a:args.' '.s:GetDocLocations()
   call ag#Ag(a:cmd,l:args)
 endfunction
 
-function! ag#AgFile(cmd, args)
+function! ag#AgFile(cmd, args) abort
   let l:args = ' -g ' . a:args
   call ag#Ag(a:cmd, args)
 endfunction
@@ -119,7 +117,7 @@ endfunction
 " Private API
 "-----------------------------------------------------------------------------
 
-function! s:handleOutput()
+function! s:handleOutput() abort
   if s:locListCommand
     let l:match_count = len(getloclist(winnr()))
   else
@@ -138,9 +136,9 @@ function! s:handleOutput()
     endif
 
     " If highlighting is on, highlight the search keyword.
-    if exists("g:ag_highlight")
+    if exists('g:ag_highlight')
       let @/ = matchstr(s:args, "\\v(-)\@<!(\<)\@<=\\w+|['\"]\\zs.{-}\\ze['\"]")
-      call feedkeys(":let &hlsearch=1 \| echo \<CR>", "n")
+      call feedkeys(":let &hlsearch=1 \| echo \<CR>", 'n')
     end
 
     redraw! " Regular vim needs some1 to tell it to redraw
@@ -154,7 +152,7 @@ function! s:handleOutput()
       nnoremap <buffer> <silent> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
 
       let l:closecmd = l:matches_window_prefix . 'close'
-      let l:opencmd  = l:matches_window_prefix . 'open'
+      let l:opencmd = l:matches_window_prefix . 'open'
 
       exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>:' . l:closecmd . '<CR>'
       exe 'nnoremap <buffer> <silent> go <CR>:' . l:opencmd . '<CR>'
@@ -171,7 +169,7 @@ function! s:handleOutput()
   endif
 endfunction
 
-function! s:handleAsyncOutput(job_id, data, event)
+function! s:handleAsyncOutput(job_id, data, event) abort
   " Don't care about older async calls that have been killed or replaced
   if s:job_number !=# a:job_id
     return
@@ -183,11 +181,11 @@ function! s:handleAsyncOutput(job_id, data, event)
 
   " When the program has finished running we parse the data
   elseif a:event ==# 'exit'
-    echom "Ag search finished"
+    echom 'Ag search finished'
     let l:expandeddata = []
     " Expand the path of the result so we can jump to it
     for l:result in s:data
-      if( l:result !~? "^/home/" ) " Only expand when the path is not a full path already
+      if( l:result !~? '^/home/' ) " Only expand when the path is not a full path already
         let l:result = s:cwd.'/'.l:result
       endif
       let l:result = substitute(l:result , '//', '/' ,'g') " Get rid of excess slashes in filename if present
@@ -208,12 +206,12 @@ function! s:handleAsyncOutput(job_id, data, event)
       endif
       call s:handleOutput()
     else
-      echom "No matches for '".s:args."'"
+      echom 'No matches for "'.s:args.'"'
     endif
   endif
 endfunction
 
-function! s:executeCmd(grepargs, cmd)
+function! s:executeCmd(grepargs, cmd) abort
   if !has('nvim')
     silent! execute a:cmd
     return
@@ -236,14 +234,14 @@ function! s:executeCmd(grepargs, cmd)
   \ }
 
   " Construct the command string send to job shell - cd [directory]; ag --vimgrep [value]
-  let l:agcmd = "cd ".s:cwd."; ".g:ag_prg . " " .  escape(a:grepargs, '|')
+  let l:agcmd = 'cd '.s:cwd.'; '.g:ag_prg . ' ' .  escape(a:grepargs, '|')
 
   echom 'Ag search started'
   let s:job_number = jobstart(['sh', '-c', l:agcmd], extend({'shell': 'shell 1'}, s:callbacks))
 endfunction
 
 
-function! s:GetDocLocations()
+function! s:GetDocLocations() abort
   let dp = ''
   for p in split(&runtimepath,',')
     let p = p.'doc/'
@@ -256,7 +254,7 @@ endfunction
 
 " Called from within a list window, preserves its height after shuffling vsplit.
 " The parameter indicates whether list was opened as copen or lopen.
-function! s:PreviewVertical(opencmd)
+function! s:PreviewVertical(opencmd) abort
   let b:height = winheight(0)    " Get the height of list window
   exec "normal! \<C-w>\<CR>"   | " Open current item in a new split
   wincmd H                       " Slam newly opened window against the left edge
@@ -265,8 +263,8 @@ function! s:PreviewVertical(opencmd)
   exec 'resize' b:height       | " Restore the list window's height
 endfunction
 
-function! s:guessProjectRoot()
-  let l:splitsearchdir = split(getcwd(), "/")
+function! s:guessProjectRoot() abort
+  let l:splitsearchdir = split(getcwd(), '/')
 
   while len(l:splitsearchdir) > 2
     let l:searchdir = '/'.join(l:splitsearchdir, '/').'/'
