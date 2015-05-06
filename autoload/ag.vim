@@ -6,6 +6,7 @@ let s:locListCommand = 0
 let s:args = ''
 let s:cwd = getcwd()
 let s:data = []
+let s:resetData = 1
 
 "-----------------------------------------------------------------------------
 " Public API
@@ -110,7 +111,12 @@ endfunction
 
 function! ag#AgFile(cmd, args) abort
   let l:args = ' -g ' . a:args
-  call ag#Ag(a:cmd, args)
+  call ag#Ag(a:cmd, l:args)
+endfunction
+
+function! ag#AgAdd(cmd, args) abort
+  let s:resetData = 0
+  call ag#Ag(a:cmd, a:args)
 endfunction
 
 "-----------------------------------------------------------------------------
@@ -224,7 +230,10 @@ function! s:executeCmd(grepargs, cmd) abort
   endtry
 
   " Clear all of the old captures
-  let s:data = []
+  if s:resetData
+    let s:data = []
+  endif
+  let s:resetData = 1
 
   " All types of exiting the job should be directed to handleAsyncOutput
   let s:callbacks = {
