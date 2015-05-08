@@ -28,6 +28,11 @@ function! ag#Ag(cmd, args) abort
     let l:grepargs = a:args . join(a:000, ' ')
   end
 
+  if empty(l:grepargs)
+    echo "Usage: ':Ag {pattern}'. See ':help :Ag' for more information."
+    return
+  endif
+
   " Format, used to manage column jump
   if a:args =~# '-g'
     let s:ag_format_backup = g:ag_format
