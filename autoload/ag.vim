@@ -248,7 +248,7 @@ function! s:executeCmd(grepargs, cmd) abort
   \ }
 
   " Construct the command string send to job shell - cd [directory]; ag --vimgrep [value]
-  let l:agcmd = 'cd '.s:cwd.'; '.g:ag_prg . ' ' .  escape(a:grepargs, '|')
+  let l:agcmd = 'cd '.s:cwd.'; '.g:ag_prg . ' ' .  shellescape(a:grepargs)
 
   echom 'Ag search started'
   let s:job_number = jobstart(['sh', '-c', l:agcmd], extend({'shell': 'shell 1'}, s:callbacks))
