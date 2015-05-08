@@ -264,12 +264,12 @@ endfunction
 " Called from within a list window, preserves its height after shuffling vsplit.
 " The parameter indicates whether list was opened as copen or lopen.
 function! s:PreviewVertical(opencmd) abort
-  let b:height = winheight(0)    " Get the height of list window
+  let l:height = winheight(0)    " Get the height of list window
   exec "normal! \<C-w>\<CR>"   | " Open current item in a new split
   wincmd H                       " Slam newly opened window against the left edge
   exec a:opencmd               | " Move back to the list window
   wincmd J                       " Slam the list window against the bottom edge
-  exec 'resize' b:height       | " Restore the list window's height
+  exec 'resize' l:height       | " Restore the list window's height
 endfunction
 
 function! s:guessProjectRoot() abort
