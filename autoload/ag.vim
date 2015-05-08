@@ -155,17 +155,17 @@ function! s:handleOutput() abort
     redraw! " Regular vim needs some1 to tell it to redraw
 
     if l:apply_mappings
-      nnoremap <buffer> <silent> h  <C-W><CR><C-w>K
-      nnoremap <buffer> <silent> H  <C-W><CR><C-w>K<C-w>b
+      nnoremap <buffer> <silent> h  <C-W><CR>:exe 'wincmd ' (&splitbelow ? 'J' : 'K')<CR><C-W>p<C-W>J<C-W>p
+      nnoremap <buffer> <silent> H  <C-W><CR>:exe 'wincmd ' (&splitbelow ? 'J' : 'K')<CR><C-W>p<C-W>J
       nnoremap <buffer> <silent> o  <CR>
-      nnoremap <buffer> <silent> t  <C-w><CR><C-w>T
-      nnoremap <buffer> <silent> T  <C-w><CR><C-w>TgT<C-W><C-W>
-      nnoremap <buffer> <silent> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
+      nnoremap <buffer> <silent> t  <C-W><CR><C-W>T
+      nnoremap <buffer> <silent> T  <C-W><CR><C-W>TgT<C-W><C-W>
+      nnoremap <buffer> <silent> v  <C-W><CR>:exe 'wincmd ' (&splitright ? 'L' : 'H')<CR><C-W>p<C-W>J<C-W>p
 
       let l:closecmd = l:matches_window_prefix . 'close'
       let l:opencmd = l:matches_window_prefix . 'open'
 
-      exe 'nnoremap <buffer> <silent> e <CR><C-w><C-w>:' . l:closecmd . '<CR>'
+      exe 'nnoremap <buffer> <silent> e <CR><C-W><C-W>:' . l:closecmd . '<CR>'
       exe 'nnoremap <buffer> <silent> go <CR>:' . l:opencmd . '<CR>'
       exe 'nnoremap <buffer> <silent> q :' . l:closecmd . '<CR>'
 
@@ -269,12 +269,12 @@ endfunction
 " Called from within a list window, preserves its height after shuffling vsplit.
 " The parameter indicates whether list was opened as copen or lopen.
 function! s:PreviewVertical(opencmd) abort
-  let l:height = winheight(0)    " Get the height of list window
-  exec "normal! \<C-w>\<CR>"   | " Open current item in a new split
-  wincmd H                       " Slam newly opened window against the left edge
-  exec a:opencmd               | " Move back to the list window
-  wincmd J                       " Slam the list window against the bottom edge
-  exec 'resize' l:height       | " Restore the list window's height
+  let l:height = winheight(0)                 " Get the height of list window
+  exec "normal! \<C-W>\<CR>"                | " Open current item in a new split
+  exec 'wincmd ' (&splitright ? 'L' : 'H')  | " Slam newly opened window against the edge specified in vimrc
+  exec a:opencmd                            | " Move back to the list window
+  wincmd J                                    " Slam the list window against the bottom edge
+  exec 'resize' l:height                    | " Restore the list window's height
 endfunction
 
 function! s:guessProjectRoot() abort
