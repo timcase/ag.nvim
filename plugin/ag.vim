@@ -4,6 +4,11 @@ if exists('g:autoloaded_ag')
   finish
 endif
 
+if !executable('ag')
+  echoe "Ag command was not found. Is the silver searcher installed and on your $PATH?"
+  finish
+endif
+
 " Location of the ag utility
 if !exists('g:ag_prg')
   " --vimgrep (consistent output we can parse) is available from version  0.25.0+
