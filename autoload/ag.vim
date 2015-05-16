@@ -20,10 +20,10 @@ endif
 if !exists("g:ag_prg")
   " --vimgrep (consistent output we can parse) is available from version  0.25.0+
   if split(system("ag --version"), "[ \n\r\t]")[2] =~ '\d\+.[2-9][5-9]\(.\d\+\)\?'
-    let g:ag_prg="ag --vimgrep"
+    let g:ag_prg="ag -o --vimgrep"
   else
     " --noheading seems odd here, but see https://github.com/ggreer/the_silver_searcher/issues/361
-    let g:ag_prg="ag --column --nogroup --noheading"
+    let g:ag_prg="ag -o --column --nogroup --noheading"
   endif
 endif
 
@@ -94,7 +94,7 @@ function! ag#Ag(cmd, args)
     let &grepformat=g:ag_format
     set t_ti=
     set t_te=
-    silent! execute a:cmd . " " . escape(l:grepargs, '|')
+    silent! execute a:cmd . " .\\{0,50}" . escape(l:grepargs, '|').".\\{0,50}"
   finally
     let &grepprg=l:grepprg_bak
     let &grepformat=l:grepformat_bak
