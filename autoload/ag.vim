@@ -247,8 +247,20 @@ function! s:executeCmd(grepargs, cmd) abort
   \ 'on_exit': function('s:handleAsyncOutput')
   \ }
 
-  " Construct the command string send to job shell - cd [directory]; ag --vimgrep [value]
-  let l:agcmd = 'cd '.s:cwd.'; '.g:ag_prg . ' ' .  shellescape(a:grepargs)
+  let l:splitargs = split(a:grepargs)
+  let l:grepargs = ''
+  "Make sure we shellescape arguments separately and expand the ~ in a string
+  for l:splitarg in l:splitargs
+    if l:splitarg !~? '^-'
+        let l:grepargs = l:grepargs.' '.shellescape(substitute(l:splitarg,'^\~',$HOME, ''))
+    else
+        let l:grepargs = l:grepargs.' '.l:splitarg
+    endif
+  endfor
+
+  " Construct the command string send to job shell -
+  " cd [directory]; ag --vimgrep [extra flags] '[value]' '[optional directory]'
+  let l:agcmd = 'cd '.s:cwd.'; '.g:ag_prg . ' ' .  l:grepargs
 
   echom 'Ag search started'
   let s:job_number = jobstart(['sh', '-c', l:agcmd], extend({'shell': 'shell 1'}, s:callbacks))
