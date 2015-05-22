@@ -172,7 +172,7 @@ function! s:handleOutput() abort
       exe 'nnoremap <buffer> <silent> gv :call <SID>PreviewVertical("' . l:opencmd . '")<CR>'
 
       if g:ag_mapping_message && l:apply_mappings
-        echom "ag.nvim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
+        echom 'ag.nvim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same'
       endif
     endif
   else
