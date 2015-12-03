@@ -1,39 +1,11 @@
 " NOTE: You must, of course, install ag / the_silver_searcher
 
-" FIXME: Delete deprecated options below on or after 2016-4 (6 months from when the deprecation warning was added) {{{
+" --vimgrep (consistent output we can parse) is available from version  0.25.0+
+let s:ag_isOld = get(split(system(g:ag_bin.' --version'), "\_s"), 2, '')
+      \ =~ '\v0\.%(\d|1\d|2[0-4])%(.\d+)?'
 
-if exists("g:agprg")
-  let g:ag_prg = g:agprg
-  echohl WarningMsg
-  call input('g:agprg is deprecated and will be removed. Please use g:ag_prg')
-  echohl None
-endif
-
-if exists("g:aghighlight")
-  let g:ag_highlight = g:aghighlight
-  echohl WarningMsg
-  call input('g:aghighlight is deprecated and will be removed. Please use g:ag_highlight')
-  echohl None
-endif
-
-if exists("g:agformat")
-  let g:ag_format = g:agformat
-  echohl WarningMsg
-  call input('g:agformat is deprecated and will be removed. Please use g:ag_format')
-  echohl None
-endif
-
-" }}} FIXME: Delete the deprecated options above on or after 15-7 (6 months from when they were changed)
-
-" Location of the ag utility
 if !exists("g:ag_prg")
-  " --vimgrep (consistent output we can parse) is available from version  0.25.0+
-  if !split(system("ag --version"), "\_s")[2] =~ '\v0\.%(\d|1\d|2[0-4])%(.\d+)?'
-    let g:ag_prg="ag --vimgrep"
-  else
-    " --noheading seems odd here, but see https://github.com/ggreer/the_silver_searcher/issues/361
-    let g:ag_prg="ag --column --nogroup --noheading"
-  endif
+  let g:ag_prg = g:ag_bin . (s:ag_isOld  ? ' --vimgrep' : ' --column')
 endif
 
 if !exists("g:ag_apply_qmappings")
