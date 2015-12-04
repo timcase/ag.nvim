@@ -6,11 +6,11 @@ VIM=vim
 die() { printf "Err: '"${0##*/}"' %s${1+\n}" "$1"; exit 1; }
 while getopts 'vk-' opt; do case "$opt"
 in v) VERBOSE=1
-;; k) KEEP=1
+;; c) CLEAN=1
 ;; -) eval 'opt=${'$((OPTIND>2? --OPTIND :OPTIND))'#--}'
   OPTARG="${opt#*=}"; case "${opt%%=*}"
   in verbose) VERBOSE=1
-  ;; keep) KEEP=1
+  ;; clean) CLEAN=1
   ;; *) die "invalid long option '--$opt'"
   esac; OPTIND=1; shift
 ;; "?") die
@@ -21,8 +21,8 @@ esac; done; shift $((OPTIND-1));
 
 color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
 get_deps() {
-  (($KEEP)) && return || rm -rf vader.vim
-  git clone -b master --single-branch --depth=1 \
+  (($CLEAN)) && rm -rf vader.vim
+  [[ -d vader.vim ]] || git clone -b master --single-branch --depth=1 \
        https://github.com/junegunn/vader.vim && echo
 }
 
@@ -47,10 +47,11 @@ utest() {
   (cd "$tempdir" && urun "$file" "$name")
   RET=$?
 
-  case "$expect"  # TODO:RFC: change return code mechanics -- simplify more
-    in failed) ((RET)) && msg="2 failed correctly" || { msg="1 not failed"; RET=1; }
-    ;;      *) ((RET)) && { msg="1 ko"; RET=1; }   || msg="2 ok"
+  case "$expect"
+    in failed) FAILURE=1; ((RET)) && msg="2 failed correctly" || msg="1 not failed"
+    ;;      *) FAILURE=0; ((RET)) && msg="1 ko" || msg="2 ok"
   esac
+  ((STATUS)) || STATUS=$(( !RET != !FAILURE ))  # Logical XOR
   echo "$entry $(color $msg)"
 }
 
@@ -58,11 +59,11 @@ testsuite() {
   for testcase in *.vader; do
     utest "$testcase"
   done
-  echo $(if ((${RET=0}))
+  echo $(if ((STATUS))
   then color '1 some test failed'
   else color '2 test suite passed'
   fi)
-  return $RET
+  return $STATUS
 }
 
 if (($#)); then utest $@; else get_deps && testsuite; fi
