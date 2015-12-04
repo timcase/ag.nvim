@@ -1,13 +1,28 @@
 #!/bin/bash
 cd $(dirname $(readlink -m ${0}))
 
-case "$1" in -v|--verbose) VERBOSE=1; shift ;; *) VERBOSE=0 ;; esac
 VIM=vim
+
+die() { printf "Err: '"${0##*/}"' %s${1+\n}" "$1"; exit 1; }
+while getopts 'vk-' opt; do case "$opt"
+in v) VERBOSE=1
+;; k) KEEP=1
+;; -) eval 'opt=${'$((OPTIND>2? --OPTIND :OPTIND))'#--}'
+  OPTARG="${opt#*=}"; case "${opt%%=*}"
+  in verbose) VERBOSE=1
+  ;; keep) KEEP=1
+  ;; *) die "invalid long option '--$opt'"
+  esac; OPTIND=1; shift
+;; "?") die
+;; :) die "needs value for '-$opt'"
+;; *) die "has mismatched option '-$opt'"
+esac; done; shift $((OPTIND-1));
+
 
 color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
 get_deps() {
-   rm -rf vader.vim
-   git clone -b master --single-branch --depth=1 \
+  (($KEEP)) && return || rm -rf vader.vim
+  git clone -b master --single-branch --depth=1 \
        https://github.com/junegunn/vader.vim && echo
 }
 
