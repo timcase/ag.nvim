@@ -4,7 +4,7 @@ cd $(dirname $(readlink -m ${0}))
 VIM=vim
 
 die() { printf "Err: '"${0##*/}"' %s${1+\n}" "$1"; exit 1; }
-while getopts 'vk-' opt; do case "$opt"
+while getopts 'vc-' opt; do case "$opt"
 in v) VERBOSE=1
 ;; c) CLEAN=1
 ;; -) eval 'opt=${'$((OPTIND>2? --OPTIND :OPTIND))'#--}'
