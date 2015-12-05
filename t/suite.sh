@@ -22,10 +22,14 @@ esac; done; shift $((OPTIND-1));
 
 
 color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
+show() {
+  printf "$(color ${1%% *} '[%6s]') %s %s\n" \
+      "${1#* }" "$(color $2)" "$3";
+}
 get_deps() {
   (($CLEAN)) && rm -rf vader.vim
-  [[ -d vader.vim ]] || git clone -b master --single-branch --depth=1 \
-       https://github.com/junegunn/vader.vim && echo
+  [[ -d vader.vim ]] || { git clone -b master --single-branch --depth=1 \
+      'https://github.com/junegunn/vader.vim' && echo; }
 }
 
 urun() { local file="$1" name="$2" cmd
@@ -41,10 +45,9 @@ utest() {
   local file="$1" name="${1%.vader}"
   local title="$(sed -rn '/^"""\s*([^"].*)/ s//\1/p' $file)"
   local expect="$(sed -rn '/^\s*""""\s*/ s///p' $file)"
-  local entry="$(color 4 ${name}) ${title}"
 
   if [[ " $SKIP_TESTS " =~ " $name " ]]; then
-    echo "$entry $(color 3 skip)"; continue
+    show "3 SKIP" "3 $name" "$title"; continue
   fi
 
   tempdir=$(mktemp -d "${name}.XXX")
@@ -53,11 +56,11 @@ utest() {
   RET=$?
 
   case "$expect"
-    in failed) FAILURE=1; ((RET)) && msg="2 failed correctly" || msg="1 not failed"
-    ;;      *) FAILURE=0; ((RET)) && msg="1 ko" || msg="2 ok"
+    in failed) FAILURE=1; ((RET)) && msg="2 FAILED (OK)" || msg="1 NOT FAILED"
+    ;;      *) FAILURE=0; ((RET)) && msg="1 FAILED" || msg="2 OK"
   esac
   ((STATUS)) || STATUS=$(( !RET != !FAILURE ))  # Logical XOR
-  echo "$entry $(color $msg)"
+  show "$msg" "4 $name" "$title"
 }
 
 testsuite() {
@@ -65,8 +68,8 @@ testsuite() {
     utest "$testcase"
   done
   echo $(if ((STATUS))
-  then color '1 some test failed'
-  else color '2 test suite passed'
+  then color 1 ' -some tests failed-'
+  else color 2 ' +test suite passed+'
   fi)
   return $STATUS
 }
