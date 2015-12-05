@@ -28,11 +28,13 @@ get_deps() {
        https://github.com/junegunn/vader.vim && echo
 }
 
-urun() { local file="$1" name="$2"
+urun() { local file="$1" name="$2" cmd
   cp -r ../fixture . && bash ../${name}.sh >/dev/null 2>&1
-  eval $EDITOR -i NONE -u NONE -U NONE -nNesS ../helper.vim \
-        -c 'Vader!' -c 'echo\"\"\|qall!' -- ../${file} \
-        $( ((VERBOSE)) || echo '>/dev/null 2>&1' )
+  cmd="$EDITOR -i NONE -u NONE -U NONE -nNS ../helper.vim" # SEE: -es
+  cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- ../${file}"
+  if ! ((VERBOSE)); then cmd+=' 2>/dev/null'; else
+    cmd+=" 2> >(echo;sed -n '/^Starting Vader/,\$p')"; fi
+  eval $cmd
 }
 
 utest() {

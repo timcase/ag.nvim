@@ -9,6 +9,7 @@ before_script:
   - sudo apt-get install silversearcher-ag
 
 script:
+  - vim --version
   - cd t
   - ./suite.sh --verbose --clean
 
