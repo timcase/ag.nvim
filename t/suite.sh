@@ -1,7 +1,9 @@
 #!/bin/bash
+# vim:ts=2:sw=2:sts=2
 cd $(dirname $(readlink -m ${0}))
 
-VIM=vim
+# [[ "$EDITOR" =~ vim ]] || EDITOR=vim
+EDITOR=vim
 
 die() { printf "Err: '"${0##*/}"' %s${1+\n}" "$1"; exit 1; }
 while getopts 'vc-' opt; do case "$opt"
@@ -28,8 +30,9 @@ get_deps() {
 
 urun() { local file="$1" name="$2"
   cp -r ../fixture . && bash ../${name}.sh >/dev/null 2>&1
-  eval $VIM -N -u NONE -S ../helper.vim -c 'Vader!' ../${file} \
-      $( ((VERBOSE)) || echo '>/dev/null 2>&1' )
+  eval $EDITOR -i NONE -u NONE -U NONE -nNesS ../helper.vim \
+        -c 'Vader!' -c 'echo\"\"\|qall!' -- ../${file} \
+        $( ((VERBOSE)) || echo '>/dev/null 2>&1' )
 }
 
 utest() {
