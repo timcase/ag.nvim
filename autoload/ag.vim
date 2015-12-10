@@ -11,7 +11,7 @@ let g:ag_options = extend(get(g:, 'ag_options', {}), {
   \ 'apply_lmappings': 1,
   \ 'mapping_message': 1,
   \ 'goto_exact_line': 0,
-\})
+\}, 'keep')
 
 for [k, v] in items(g:ag_options)
   if !exists('g:ag_'.k) | let g:ag_{k}=v | endif
@@ -158,7 +158,7 @@ function ToggleShowLine()
     setlocal conceallevel=2
   else
     setlocal conceallevel=0
-  endif  
+  endif
 endfunction
 
 function DeleteFold()
@@ -179,14 +179,14 @@ endfunction
 "
 function NextFold()
   let save_a_mark = getpos("'a")
-  let mark_a_exists = save_a_mark[1] == 0 
+  let mark_a_exists = save_a_mark[1] == 0
   mark a
   execute 'normal zMzjzo'
   if getpos('.')[1] == getpos("'a")[1]
     "no movement go to first position
     normal gg
     execute 'normal zMzjzo'
-  endif  
+  endif
   if mark_a_exists
     call setpos("'a", save_a_mark)
   else
