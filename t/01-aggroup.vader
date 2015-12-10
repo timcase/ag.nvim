@@ -43,3 +43,19 @@ Expect (match on line 22 and 41):
 
   fixture/sample.vim
   22:33:   echo "a line with percentage %foge"
+
+Execute (history addition):
+  "do a search
+  :AgGroup "hoge" fixture
+  "goto line
+  ":execute "normal \<Space>"
+  :call NextFold()
+  ":execute "normal \<Enter>"
+  :call OpenFile(0)
+  "move around
+  :normal j
+  "search with shortcut
+  ":execute "normal \<Leader>ag"
+  :execute "normal \<Plug>(ag-group)"
+  "expect search to be on history
+  :AssertEqual histget(":"), "AgGroup fuga"

@@ -28,8 +28,8 @@ command! -count -nargs=*               AgGroupFile call ag#AgGroup(<count>, 0, <
 command! -count                        AgGroupLast call ag#AgGroupLast(<count>)
 
 
-nnoremap <silent> <Plug>(ag-group)  :call ag#AgGroup(v:count, 0, '', '')<CR>
-xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#AgGroup(v:count, 1, '', '')<CR>
+nnoremap <silent> <Plug>(ag-group)  :call ag#AgGroupShortCut(v:count, 0)<CR>
+xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#AgGroupShortCut(v:count, 1)<CR>
 nnoremap <silent> <Plug>(ag-group-last)  :call ag#AgGroupLast(v:count)<CR>
 " TODO: add <Plug> mappings for Ag* and LAg*
 
