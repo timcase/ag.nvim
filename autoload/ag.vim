@@ -16,6 +16,7 @@ let g:ag_options = extend(get(g:, 'ag_options', {}), {
 
 for [k, v] in items(g:ag_options)
   if !exists('g:ag_'.k) | let g:ag_{k}=v | endif
+  unlet k v
 endfor
 
 function! ag#AgBuffer(cmd, args)
