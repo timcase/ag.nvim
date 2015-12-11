@@ -1,17 +1,44 @@
 language: generic
+sudo: false
 
-sudo: required
-dist: trusty
+env:
+  - AG_VER=master
+  - AG_VER=0.31.0
+  - AG_VER=0.25.0
+  - AG_VER=0.23.0
 
-before_script:
-  - sudo apt-get update -qq
-  - sudo apt-get install vim
-  - sudo apt-get install silversearcher-ag
+addons:
+  apt:
+    packages:
+    - vim
+    - automake
+    - pkg-config
+    - libpcre3-dev
+    - zlib1g-dev
+    - liblzma-dev
+
+before_install:
+  - URL=https://github.com/ggreer/the_silver_searcher/archive
+  - DIR=$HOME/ag/the_silver_searcher-$AG_VER
+  - export PATH="$DIR:$PATH"
+  - if [[ ! -d $DIR ]]; then
+    (cd ~ && wget $URL/$AG_VER.zip && unzip -d ag $AG_VER.zip); fi
+  - if [[ ! -f $DIR/ag ]]; then
+    (cd $DIR && ./build.sh) || (rm -rf $DIR); fi
+  - ver=$(ag --version | awk '{gsub("\\.","");printf("%d\n",$NF);exit}')
+  - if (($ver >= 280)) && [[ ! -f $DIR/ag- ]]; then
+    mv -v $DIR/ag{,-};
+    printf '#!/bin/sh\nag- --noaffinity "$@"' > $DIR/ag;
+    chmod +x $DIR/ag; fi
+
+cache:
+  directories:
+  - $HOME/ag
 
 script:
+  - ag --version
   - vim --version
-  - cd t
-  - ./suite.sh --verbose --clean
+  - (cd t && ./suite.sh --verbose --clean)
 
 notifications:
   email:
