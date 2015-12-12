@@ -2,6 +2,8 @@
 # vim:ts=2:sw=2:sts=2
 cd $(dirname $(readlink -m ${0}))
 
+[[ -n "$TMPDIR" ]] || TMPDIR="$(dirname $(mktemp --dry-run --tmpdir))"
+T_DIR="$PWD"
 # [[ "$EDITOR" =~ vim ]] || EDITOR=vim
 EDITOR=vim
 
@@ -27,15 +29,17 @@ show() {
       "${1#* }" "$(color $2)" "$3";
 }
 get_deps() {
-  (($CLEAN)) && rm -rf vader.vim
-  [[ -d vader.vim ]] || { git clone -b master --single-branch --depth=1 \
-      'https://github.com/junegunn/vader.vim' && echo; }
+  local url="https://github.com/junegunn/vader.vim"
+  local vader="$TMPDIR/${url##*/}"
+  (($CLEAN)) && rm -rf "$vader"
+  [[ -d "$vader" ]] || (cd "${vader%/*}" &&
+    git clone -b master --single-branch --depth=1 "$url" && echo)
 }
 
 urun() { local file="$1" name="$2" cmd
-  cp -r ../fixture . && bash ../${name}.sh >/dev/null 2>&1
-  cmd="$EDITOR -i NONE -u NONE -U NONE -nNS ../helper.vim" # SEE: -es
-  cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- ../${file}"
+  cp -r "$T_DIR/fixture" . && bash "$T_DIR/${name}.sh" >/dev/null 2>&1
+  cmd="$EDITOR -i NONE -u NONE -U NONE -nNS '$T_DIR/helper.vim'" # SEE: -es
+  cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- '$T_DIR/${file}'"
   if ! ((VERBOSE)); then cmd+=' 2>/dev/null'; else
     cmd+=" 2> >(echo;sed -n '/^Starting Vader/,\$p')"; fi
   eval $cmd
@@ -50,9 +54,9 @@ utest() {
     show "3 SKIP" "3 $name" "$title"; continue
   fi
 
-  tempdir=$(mktemp -d "${name}.XXX")
-  trap "rm -rf '$tempdir'" RETURN INT TERM EXIT
-  (cd "$tempdir" && urun "$file" "$name")
+  testdir="$(mktemp --tmpdir -d "${name}.XXX")"
+  trap "rm -rf '$testdir'" RETURN INT TERM EXIT
+  (cd "$testdir" && urun "$file" "$name")
   RET=$?
 
   case "$expect"

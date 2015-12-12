@@ -1,8 +1,10 @@
+if !exists('$TMPDIR')
+  let $TMPDIR = fnamemodify(system('mktemp --dry-run --tmpdir'), ':h')
+endif
+
+let $VADER = expand($TMPDIR . '/vader.vim/')
 let $PJROOT = fnamemodify(resolve(expand('<sfile>')), ':h:h')
-let $VADERT = expand($PJROOT .'/t/vader.vim/')
 
-set runtimepath+=$VADERT
-exe 'so' fnameescape($VADERT . '/plugin/vader.vim')
-
-set runtimepath+=$PJROOT
-exe 'so' fnameescape($PJROOT . '/plugin/ag.vim')
+set runtimepath+=$VADER,$PJROOT
+exe 'so' fnameescape($VADER  .'/plugin/vader.vim')
+exe 'so' fnameescape($PJROOT .'/plugin/ag.vim')
