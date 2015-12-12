@@ -46,9 +46,9 @@ urun() { local file="$1" name="$2" cmd
 }
 
 utest() {
-  local file="$1" name="${1%.vader}"
-  local title="$(sed -rn '/^"""\s*([^"].*)/ s//\1/p' $file)"
-  local expect="$(sed -rn '/^\s*""""\s*/ s///p' $file)"
+  local file="$1" name="${1##*/}"; name="${name%.vader}"
+  local title="$(sed -rn '/^"""\s*([^"].*)/ s//\1/p' "$file")"
+  local expect="$(sed -rn '/^\s*""""\s*/ s///p' "$file")"
 
   if [[ " $SKIP_TESTS " =~ " $name " ]]; then
     show "3 SKIP" "3 $name" "$title"; continue
@@ -68,8 +68,8 @@ utest() {
 }
 
 testsuite() {
-  for testcase in *.vader; do
-    utest "$testcase"
+  for fl in tests/*.vader; do
+    utest "$fl"
   done
   echo $(if ((STATUS))
   then color 1 ' -some tests failed-'
@@ -78,4 +78,6 @@ testsuite() {
   return $STATUS
 }
 
-if (($#)); then utest $@; else get_deps && testsuite; fi
+if (($#)); then for nm in "$@"; do
+  utest "tests/${nm}.vader";
+done; else get_deps && testsuite; fi
