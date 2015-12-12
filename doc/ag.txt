@@ -14,7 +14,7 @@ the results in a split window.
     will open the |Quickfix| window for you. If [!] is not given the first
     error is jumped to.
 
-:[N]AgGroup [options] {pattern} [{directory}]                       *:AgGroup*
+:[N]Agg [options] {pattern} [{directory}]                      *:Agg* *:AgGroup*
 
     Search recursively in {directory} (which defaults to the current
     directory) for the {pattern}. Behaves just like the 
@@ -33,6 +33,11 @@ the results in a split window.
      S       Goto selected file:line:col splitting vertical above
      d       Delete result
      gl       Toggle linenumber visualization
+
+                                                        *:AggFile* *:AgGroupFile*
+:[N]AggFile {fileregexp} [options] {pattern} [{directory}]  
+   
+    Search like |Agg|, but uses first word as fileregexp for -G option of ag.
 
 :AgBuffer[!] [options] {pattern}                                    *:AgBuffer*
 

@@ -74,7 +74,7 @@ endfunction
 function! ag#AgGroupShortCut(ncontext, visualmode)
   call ag#AgGroup(a:ncontext, a:visualmode, '', '')
   if g:ag_shorcuts_to_history
-     call histadd(":", "AgGroup " . g:last_aggroup)
+     call histadd(":", "Agg" . " " . g:last_aggroup)
   endif
 endfunction
 

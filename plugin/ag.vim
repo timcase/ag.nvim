@@ -23,8 +23,10 @@ command! -bang -nargs=* -complete=file LAgAdd call ag#Ag('lgrepadd<bang>', <q-ar
 command! -bang -nargs=* -complete=file LAgBuffer call ag#AgBuffer('lgrep<bang>',<q-args>)
 command! -bang -nargs=* -complete=help LAgHelp call ag#AgHelp('lgrep<bang>',<q-args>)
 
-command! -count -nargs=*               AgGroup call     ag#AgGroup(<count>, 0, '', <q-args>)
-command! -count -nargs=*               AgGroupFile call ag#AgGroup(<count>, 0, <f-args>)
+command! -count -nargs=*               AgGroup call     ag#AgGroup(<count>, 0, '', <q-args>) "deprecated
+command! -count -nargs=*               Agg call     ag#AgGroup(<count>, 0, '', <q-args>)
+command! -count -nargs=*               AgGroupFile call ag#AgGroup(<count>, 0, <f-args>) "deprecated
+command! -count -nargs=*               AggFile call ag#AgGroup(<count>, 0, <f-args>)
 command! -count                        AgGroupLast call ag#AgGroupLast(<count>)
 
 
