@@ -1,0 +1,33 @@
+""" check Ag pre-defined options, no regex
+= :Ag
+= :Ag options..
+= :Ag options.. '' [<path>..]
+
+================================
+Execute (::Hold cwd fixture):
+  cd fixture
+================================
+Given (cword):
+  bazz
+
+Do (Empty):
+  :Ag\<CR>
+
+Expect (1 file, 1 match):
+  sample.vim|3 col 16| let fuga = 'bazz'
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Given (cword):
+  bazz
+
+Do (Empty):
+  viw:\<C-u>Ag\<CR>
+
+Expect (1 file, 1 match):
+  sample.vim|3 col 16| let fuga = 'bazz'
+
+================================
+Before:
+After:
+Execute (::Release fixture):
+  cd ..

@@ -1,0 +1,43 @@
+""" check Ag user-specified cmdline in cwd
+= :Ag regex
+= :Ag regex [<path>..]
+= :Ag [<options>..] regex
+= :Ag [<options>..] regex [<path>..]
+
+================================
+Execute (::Hold cwd fixture):
+  cd fixture
+=========== Spaces =============
+Execute (Raw singleword):
+  Ag bazz
+
+Expect (1 file, 1 match):
+  sample.vim|3 col 16| let fuga = 'bazz'
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Quoted singleword):
+  Ag "bazz"
+
+Expect (1 file, 1 match):
+  sample.vim|3 col 16| let fuga = 'bazz'
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Escaped multiword):
+  Ag let\ fuga
+
+Expect (1 file, 1 match):
+  sample.vim|3 col 4| let fuga = 'bazz'
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Quoted multiword):
+  Ag "let fuga"
+
+Expect (1 file, 1 match):
+  sample.vim|3 col 4| let fuga = 'bazz'
+
+
+================================
+Before:
+After:
+Execute (::Release fixture):
+  cd ..
