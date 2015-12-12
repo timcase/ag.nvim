@@ -1,0 +1,50 @@
+""" check Ag escaping of vim and shell specific symbols
+""""failed
+= :Ag regex
+= ...
+
+================================
+Execute (::Hold cwd fixture):
+  cd fixture
+========= Vim-Special ==========
+Execute (Vim # raw):
+  Ag ha#sh
+
+Expect (1 file, 1 match):
+  special|1 col 1| ha#sh
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Vim # quoted):
+  Ag "ha#sh"
+
+Expect (1 file, 1 match):
+  special|1 col 1| ha#sh
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Vim % raw):
+  Ag per%cent
+
+Expect (1 file, 1 match):
+  special|2 col 1| per%cent
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Vim % quoted):
+  Ag "per%cent"
+
+Expect (1 file, 1 match):
+  special|2 col 1| per%cent
+
+
+======== Shell-Special =========
+Execute (Shell \( ):
+# Ag f\\\(...\\\)
+  Ag f\(...\)
+
+Expect (1 file, 1 match):
+  special|3 col 1| f(...)
+
+================================
+Before:
+After:
+Execute (::Release fixture):
+  cd ..
