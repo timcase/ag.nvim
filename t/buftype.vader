@@ -1,0 +1,37 @@
+""" check Right view for Ag/LAg/AgGroup/~keymaps
+""""failed
+-----------------------------------------
+
+================================
+Before (clear qf lists):
+  cgetexpr []
+  lgetexpr []
+
+Execute (::Hold cwd fixture):
+  cd fixture
+================================
+Execute (Ag):
+  Ag word
+
+Then (Check buffer type):
+  Assert (&buftype == 'quickfix') && !empty(getqflist()) && empty(getloclist(0))
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (LAg):
+  LAg word
+
+Then (Check buffer type):
+  Assert (&buftype == 'quickfix') && empty(getqflist()) && !empty(getloclist(0))
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (AgGroup):
+  AgGroup word
+
+Then (Check buffer type):
+  Assert (&buftype == 'nofile') && empty(getqflist()) && empty(getloclist(0))
+
+================================
+Before:
+After:
+Execute (::Release fixture):
+  cd ..
