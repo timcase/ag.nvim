@@ -170,6 +170,10 @@ the mappings are not applied (see |g:ag_apply_qmappings| and
 |g:ag_apply_lmappings| for more info. Default 1. Example: >
   let g:ag_mapping_message=0
 <
+                                                     *g:ag_shorcuts_to_history*
+Every search issued from shorcuts in normal or visual mode, is added to 
+history when |g:ag_shorcuts_to_history| is enabled. Default 0. Example: >
+  let g:ag_shorcuts_to_history=1
 
 ==============================================================================
 MAPPINGS                                                         *ag-mappings*

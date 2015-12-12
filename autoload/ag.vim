@@ -11,7 +11,7 @@ let g:ag_options = extend(get(g:, 'ag_options', {}), {
   \ 'apply_lmappings': 1,
   \ 'mapping_message': 1,
   \ 'goto_exact_line': 0,
-  \ 'shorcuts_to_history': 1,
+  \ 'shorcuts_to_history': 0,
   \ 'working_path_mode': 'c'
 \}, 'keep')
 
