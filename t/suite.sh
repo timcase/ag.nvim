@@ -25,8 +25,8 @@ esac; done; shift $((OPTIND-1));
 
 color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
 show() {
-  printf "$(color ${1%% *} '[%6s]') %s %s\n" \
-      "${1#* }" "$(color $2)" "$3";
+  printf "$(color ${1%% *} '[%6s] -%s-') %s %s\n" \
+      "${1#* }" "$2" "$(color $3)" "$4";
 }
 get_deps() {
   local url="https://github.com/junegunn/vader.vim"
@@ -39,7 +39,7 @@ get_deps() {
 urun() { local file="$1" name="$2" cmd
   cp -r "$T_DIR/fixture" . && bash "$T_DIR/${name}.sh" >/dev/null 2>&1
   cmd="$EDITOR -i NONE -u NONE -U NONE -nNS '$T_DIR/helper.vim'" # SEE: -es
-  cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- '$T_DIR/${file}'"
+  cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- '${file}'"
   if ! ((VERBOSE)); then cmd+=' 2>/dev/null'; else
     cmd+=" 2> >(echo;sed -n '/^Starting Vader/,\$p')"; fi
   eval $cmd
@@ -51,7 +51,7 @@ utest() {
   local expect="$(sed -rn '/^\s*""""\s*/ s///p' "$file")"
 
   if [[ " $SKIP_TESTS " =~ " $name " ]]; then
-    show "3 SKIP" "3 $name" "$title"; continue
+    show "3 SKIP" "--" "3 $name" "$title"; continue
   fi
 
   testdir="$(mktemp --tmpdir -d "${name}.XXX")"
@@ -64,20 +64,23 @@ utest() {
     ;;      *) FAILURE=0; ((RET)) && msg="1 FAILED" || msg="2 OK"
   esac
   ((STATUS)) || STATUS=$(( !RET != !FAILURE ))  # Logical XOR
-  show "$msg" "4 $name" "$title"
+  ((NUM+=1))
+  show "$msg" "$(printf "%02d" "$NUM")" "4 $name" "$title"
 }
 
-testsuite() {
-  for fl in tests/*.vader; do
-    utest "$fl"
+testsuite() { local NUM=0
+  for rgx in "${@:-.*}"; do
+    for fl in "$T_DIR/tests"/*.vader; do
+      if [[ "${fl##*/}" =~ $rgx ]]
+      then utest "$fl"; fi
+    done
+    ((NUM<2)) || echo $(color 3 ' ~~~~~~~~~~~~~~~~~~~')
   done
-  echo $(if ((STATUS))
+  ((NUM<2)) || echo $(if ((STATUS))
   then color 1 ' -some tests failed-'
   else color 2 ' +test suite passed+'
   fi)
   return $STATUS
 }
 
-if (($#)); then for nm in "$@"; do
-  utest "tests/${nm}.vader";
-done; else get_deps && testsuite; fi
+get_deps && testsuite "$@"
