@@ -175,15 +175,18 @@ the mappings are not applied (see |g:ag_apply_qmappings| and
 |g:ag_apply_lmappings| for more info. Default 1. Example: >
   let g:ag_mapping_message=0
 <
+
                                                          *g:ag_goto_exact_line*
 When navigate to file behind search, if there's context, |g:ag_goto_exact_line| 
 jumps to exact line selected, instead of matched line. Default 0. Example: >
   let g:ag_goto_exact_line=1
 <
-                                                     *g:ag_shorcuts_to_history*
-Every search issued from shorcuts in normal or visual mode, is added to 
-history when |g:ag_shorcuts_to_history| is enabled. Default 0. Example: >
-  let g:ag_shorcuts_to_history=1
+
+                                                     *g:ag_mappings_to_cmd_history*
+Every search issued from shortcuts in normal or visual mode, is added to 
+history when |g:ag_mappings_to_cmd_history| is enabled. Default 0. Example: >
+  let g:ag_mappings_to_cmd_history=1
+<
 
 ==============================================================================
 MAPPINGS                                                         *ag-mappings*

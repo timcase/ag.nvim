@@ -11,7 +11,7 @@ let g:ag_options = extend(get(g:, 'ag_options', {}), {
   \ 'apply_lmappings': 1,
   \ 'mapping_message': 1,
   \ 'goto_exact_line': 0,
-  \ 'shorcuts_to_history': 0,
+  \ 'mappings_to_cmd_history': 0,
   \ 'working_path_mode': 'c'
 \}, 'keep')
 
@@ -73,7 +73,7 @@ endfunction
 
 function! ag#AgGroupShortCut(ncontext, visualmode)
   call ag#AgGroup(a:ncontext, a:visualmode, '', '')
-  if g:ag_shorcuts_to_history
+  if g:ag_mappings_to_cmd_history
      call histadd(":", "Agg" . " " . g:last_aggroup)
   endif
 endfunction
