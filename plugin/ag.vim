@@ -8,6 +8,13 @@ catch
   echom v:exception | finish
 endtry
 
+try
+  call ag#operator#init()
+catch /E117:/
+  " echom "Err: function not found or 'kana/vim-operator-user' not installed"
+endtry
+
+
 " NOTE: You must, of course, install ag / the_silver_searcher
 command! -bang -nargs=* -complete=file Ag call ag#Ag('grep<bang>',<q-args>)
 command! -bang -nargs=* -complete=file AgAdd call ag#Ag('grepadd<bang>', <q-args>)
@@ -34,14 +41,6 @@ nnoremap <silent> <Plug>(ag-group-last)  :call ag#AgGroupLast(v:count)<CR>
 " TODO: add <Plug> mappings for Ag* and LAg*
 
 
-try
-  for v in ['qf', 'loc', 'grp']
-    call operator#user#define('ag-'.v.'-do', 'ag#operator_'.v)
-  endfor
-catch /E117:/
-endtry
-
-
 if !(exists("g:ag.no_default_mappings") && g:ag.no_default_mappings)
   let s:ag_mappings = [
     \ ['nx', '<Leader>af', '<Plug>(ag-qf)'],
@@ -60,9 +59,9 @@ if !(exists("g:ag.no_default_mappings") && g:ag.no_default_mappings)
     \ ['nx', '<Leader>ag', '<Plug>(ag-group)'],
     \ ['n',  '<Leader>ra', '<Plug>(ag-group-last)'],
     \
-    \ ['nx', '<Leader>ad', '<Plug>(operator-ag-qf-do)'],
-    \ ['nx', '<Leader>Ad', '<Plug>(operator-ag-loc-do)'],
-    \ ['nx', '<Leader>Ag', '<Plug>(operator-ag-grp-do)'],
+    \ ['nx', '<Leader>ad', '<Plug>(operator-ag-qf)'],
+    \ ['nx', '<Leader>Ad', '<Plug>(operator-ag-loc)'],
+    \ ['nx', '<Leader>Ag', '<Plug>(operator-ag-grp)'],
     \]
 endif
 
