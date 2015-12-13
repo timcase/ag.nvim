@@ -1,0 +1,120 @@
+""" check Ag -w for word bounds
+= :Ag regex
+= :Ag regex [<path>..]
+= :Ag [<options>..] regex
+= :Ag [<options>..] regex [<path>..]
+
+================================
+Execute (::Hold cwd fixture):
+  cd fixture
+=========== Single =============
+Execute (Match singlewhole):
+  Ag singlewhole
+
+Expect (1 file, 1 match):
+  partial|1 col 2| "singlewhole"
+
+Execute (Match -w singlewhole):
+  Ag -w singlewhole
+
+Expect (1 file, 1 match):
+  partial|1 col 2| "singlewhole"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Match singleleft_):
+  Ag singleleft
+
+Expect (1 file, 1 match):
+  partial|2 col 1| singleleft_
+
+Execute (No match -w singleleft_):
+  Ag -w singleleft
+
+Then (No matches):
+  Assert empty(getqflist())
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Match _singleright):
+  Ag singleright
+
+Expect (1 file, 1 match):
+  partial|3 col 2| _singleright
+
+Execute (No match -w _singleright):
+  Ag -w singleright
+
+Then (No matches):
+  Assert empty(getqflist())
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Match _singlecenter_):
+  Ag singlecenter
+
+Expect (1 file, 1 match):
+  partial|4 col 2| _singlecenter_
+
+Execute (No match -w _singlecenter_):
+  Ag -w singlecenter
+
+Then (No matches):
+  Assert empty(getqflist())
+
+
+========== Multiple ============
+Execute (Match multi whole):
+  Ag multi\ whole
+
+Expect (1 file, 1 match):
+  partial|6 col 2| "multi whole"
+
+Execute (Match -w multi whole):
+  Ag -w multi\ whole
+
+Expect (1 file, 1 match):
+  partial|6 col 2| "multi whole"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Match multi left_):
+  Ag multi\ left
+
+Expect (1 file, 1 match):
+  partial|7 col 2| "multi left_
+
+Execute (No match -w multi left_):
+  Ag -w multi\ left
+
+Then (No matches):
+  Assert empty(getqflist())
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Match _multi right):
+  Ag multi\ right
+
+Expect (1 file, 1 match):
+  partial|8 col 2| _multi right"
+
+Execute (No match -w _multi right):
+  Ag -w multi\ right
+
+Then (No matches):
+  Assert empty(getqflist())
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execute (Match _multi center_):
+  Ag multi\ center
+
+Expect (1 file, 1 match):
+  partial|9 col 2| _multi center_
+
+Execute (No match -w _multi center_):
+  Ag -w multi\ center
+
+Then (No matches):
+  Assert empty(getqflist())
+
+
+================================
+Before:
+After:
+Execute (::Release fixture):
+  cd ..

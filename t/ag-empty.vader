@@ -7,24 +7,24 @@
 Execute (::Hold cwd fixture):
   cd fixture
 ================================
-Given (cword):
-  bazz
+Given (Current <cword>):
+  single
 
-Do (Empty):
+Do (Empty in NORMAL):
   :Ag\<CR>
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
+  space|1 col 1| singleword
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Given (cword):
-  bazz
+Given (One word VSEL):
+  multi
 
-Do (Empty):
+Do (Empty in VISUAL):
   viw:\<C-u>Ag\<CR>
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
+  space|2 col 1| multi word
 
 ================================
 Before:

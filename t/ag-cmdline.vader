@@ -9,67 +9,53 @@ Execute (::Hold cwd fixture):
   cd fixture
 =========== Spaces =============
 Execute (Raw singleword):
-  Ag bazz
+  Ag singleword
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
+  space|1 col 1| singleword
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Execute (Quoted 'singleword'):
-  Ag 'bazz'
+  Ag 'singleword'
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
+  space|1 col 1| singleword
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Execute (Escaped multi\ word):
-  Ag let\ fuga
+  Ag multi\ word
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 4| let fuga = 'bazz'
+  space|2 col 1| multi word
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Execute (Quoted "multi word"):
-  Ag "let fuga"
+  Ag "multi word"
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 4| let fuga = 'bazz'
+  space|2 col 1| multi word
 
 
 =========== Options ============
-Execute (Whole -w singleword):
-  Ag -w bazz
+Execute (Case-ignore -i caSeIGnoRe):
+  Ag -i ignore
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
+  option|1 col 5| caSeIGnoRe
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Execute (Whole -w 'multi word'):
-  Ag -w 'let fuga'
+Execute (Matched-only -o _PART_only):
+  Ag -o part
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 4| let fuga = 'bazz'
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Execute (Case-ignore -i singleword):
-  Ag -i BAZZ
-
-Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Execute (Matched-only -o singleword):
-  Ag -o bazz
-
-Expect (1 file, 1 match):
-  sample.vim|3 col 16| bazz
+  option|2 col 4| part
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Execute (Multiple flags -Q -w singleword):
-  Ag -Q -w bazz
+  Ag -Q -w 're.*x'
 
 Expect (1 file, 1 match):
-  sample.vim|3 col 16| let fuga = 'bazz'
+  option|3 col 1| re.*x
 
 ================================
 Before:

@@ -3,14 +3,13 @@
 = :Ag [<options>..] regex path..
 
 ================================
-Execute(Results in subdir):
-  Ag fuga fixture
+Execute(Match in subdir):
+  Ag word fixture
 
 Expect (1 path, 4 matches):
-  fixture/sample.vim|3 col 8| let fuga = 'bazz'
-  fixture/sample.vim|11 col 7| if fuga =~ 'z'
-  fixture/sample.vim|12 col 13| echo "fuga contains z"
-  fixture/sample.vim|14 col 13| echo 'fuga does not contains z'
+  fixture/partial|1 col 2| "word a"
+  fixture/partial|2 col 3| b word_
+  fixture/partial|3 col 3| c(word)
 
 
 ================================
