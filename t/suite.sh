@@ -25,7 +25,7 @@ esac; done; shift $((OPTIND-1));
 
 color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
 show() {
-  printf "$(color ${1%% *} '[%6s] -%s-') %s %s\n" \
+  printf "$(color ${1%% *} '[%7s] -%s-') %s %s\n" \
       "${1#* }" "$2" "$(color $3)" "$4";
 }
 get_deps() {
@@ -38,7 +38,7 @@ get_deps() {
 
 urun() { local file="$1" name="$2" cmd
   cp -r "$T_DIR/fixture" . && bash "$T_DIR/${name}.sh" >/dev/null 2>&1
-  cmd="$EDITOR -i NONE -u NONE -U NONE -nNS '$T_DIR/helper.vim'" # SEE: -es
+  cmd="$EDITOR -i NONE -u NONE -U NONE -nNesS '$T_DIR/helper.vim'"
   cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- '${file}'"
   if ! ((VERBOSE)); then cmd+=' 2>/dev/null'; else
     cmd+=" 2> >(echo;sed -n '/^Starting Vader/,\$p')"; fi
@@ -58,13 +58,14 @@ utest() {
   trap "rm -rf '$testdir'" RETURN INT TERM EXIT
   (cd "$testdir" && urun "$file" "$name")
   RET=$?
+  ((--RET))  # EXPL: Until clarified, treat 0 as error also.
 
   case "$expect"
-    in failed) FAILURE=1; ((RET)) && msg="2 FAILED (OK)" || msg="1 NOT FAILED"
-    ;;      *) FAILURE=0; ((RET)) && msg="1 FAILED" || msg="2 OK"
+    in failed) FAILURE=1; ((RET)) && msg="2 FAIL/OK" || msg="1 FAIL/NO"
+    ;;      *) FAILURE=0; ((RET)) && msg="1 FAILURE" || msg="2 OK"
   esac
   ((STATUS)) || STATUS=$(( !RET != !FAILURE ))  # Logical XOR
-  ((NUM+=1))
+  ((++NUM))
   show "$msg" "$(printf "%02d" "$NUM")" "4 $name" "$title"
 }
 
