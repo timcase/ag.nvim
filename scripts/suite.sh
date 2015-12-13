@@ -76,7 +76,7 @@ utest() {
 
 testsuite() { local NUM=0
   for rgx in "${@:-.*}"; do
-    for fl in "$PJROOT/t/tests"/*.vader; do
+    for fl in "$PJROOT/t"/*.vader; do
       if [[ "${fl##*/}" =~ $rgx ]]
       then utest "$fl"; fi
     done
