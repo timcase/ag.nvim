@@ -8,7 +8,7 @@ Then (syntax for multiword match "let"):
   AssertEqual SyntaxAt(3,14), 'agSearch'
 
 Expect (matches on line 3,11,12 and 14):
-  
+
   fixture/sample.vim
   3:8:   let fuga = 'bazz'
   11:7:   if fuga =~ 'z'

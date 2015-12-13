@@ -17,12 +17,12 @@ the results in a split window.
 :[N]Agg [options] {pattern} [{directory}]                      *:Agg* *:AgGroup*
 
     Search recursively in {directory} (which defaults to the current
-    directory) for the {pattern}. Behaves just like the 
-      ag --group --column 
-    shell command, but will open a temporary buffer for you. If [N] is given 
+    directory) for the {pattern}. Behaves just like the
+      ag --group --column
+    shell command, but will open a temporary buffer for you. If [N] is given
     N lines of context are surrounded from match.
-    On this buffer (unmodifiable) you have highlights for filename, 
-    linenumber, surround lines and search string. Even folds for file matches 
+    On this buffer (unmodifiable) you have highlights for filename,
+    linenumber, surround lines and search string. Even folds for file matches
     and this mappings avaliable:
 
      o       fold/unfold current file match
@@ -35,8 +35,8 @@ the results in a split window.
      gl       Toggle linenumber visualization
 
                                                         *:AggFile* *:AgGroupFile*
-:[N]AggFile {fileregexp} [options] {pattern} [{directory}]  
-   
+:[N]AggFile {fileregexp} [options] {pattern} [{directory}]
+
     Search like |Agg|, but uses first word as fileregexp for -G option of ag.
 
 :AgBuffer[!] [options] {pattern}                                    *:AgBuffer*
@@ -177,13 +177,13 @@ the mappings are not applied (see |g:ag_apply_qmappings| and
 <
 
                                                          *g:ag_goto_exact_line*
-When navigate to file behind search, if there's context, |g:ag_goto_exact_line| 
+When navigate to file behind search, if there's context, |g:ag_goto_exact_line|
 jumps to exact line selected, instead of matched line. Default 0. Example: >
   let g:ag_goto_exact_line=1
 <
 
                                                      *g:ag_mappings_to_cmd_history*
-Every search issued from shortcuts in normal or visual mode, is added to 
+Every search issued from shortcuts in normal or visual mode, is added to
 history when |g:ag_mappings_to_cmd_history| is enabled. Default 0. Example: >
   let g:ag_mappings_to_cmd_history=1
 <
