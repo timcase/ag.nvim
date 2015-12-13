@@ -23,7 +23,12 @@ in v) VERBOSE=1
 esac; done; shift $((OPTIND-1));
 
 
-color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
+if [[ -t 1 ]]; then
+  color() { printf "%s" "$(tput setaf $1)${@:2}$(tput sgr0)"; }
+else
+  color() { printf "%s" "${@:2}"; }
+fi
+
 show() {
   printf "$(color ${1%% *} '[%7s] -%s-') %s %s\n" \
       "${1#* }" "$2" "$(color $3)" "$4";
