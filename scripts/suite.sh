@@ -42,7 +42,8 @@ get_deps() {
 }
 
 urun() { local file="$1" name="$2" cmd
-  cp -r "$PJROOT/t/fixture" . && bash "$PJROOT/t/${name}.sh" >/dev/null 2>&1
+  cp -rT "$PJROOT/t/$name" ./fixture || return
+  # bash "$PJROOT/t/${name}.sh" >/dev/null 2>&1  # REGR?CHECK: currently useless
   cmd="$EDITOR -i NONE -u NONE -U NONE -nNesS '$PJROOT/scripts/helper.vim'"
   cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- '${file}'"
   if ! ((VERBOSE)); then cmd+=' 2>/dev/null'; else
