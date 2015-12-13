@@ -42,7 +42,7 @@ catch /E117:/
 endtry
 
 
-if !(exists("g:ag_no_default_mappings") && g:ag_no_default_mappings)
+if !(exists("g:ag.no_default_mappings") && g:ag.no_default_mappings)
   let s:ag_mappings = [
     \ ['nx', '<Leader>af', '<Plug>(ag-qf)'],
     \ ['nx', '<Leader>aa', '<Plug>(ag-qf-add)'],

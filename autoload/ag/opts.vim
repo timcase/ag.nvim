@@ -24,9 +24,4 @@ function! ag#opts#init()
     throw "Binary '".g:ag.bin."' was not found in your $PATH. "
         \."Check if the_silver_searcher is installed and available."
   endif
-
-  for [k, v] in items(g:ag)
-    if !exists('g:ag_'.k) | let g:ag_{k}=v | endif
-    unlet k v
-  endfor
 endfunction

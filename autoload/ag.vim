@@ -51,7 +51,7 @@ endfunction
 
 function! ag#AgGroupShortCut(ncontext, visualmode)
   call ag#AgGroup(a:ncontext, a:visualmode, '', '')
-  if g:ag_mappings_to_cmd_history
+  if g:ag.mappings_to_cmd_history
      call histadd(":", "Agg" . " " . g:last_aggroup)
   endif
 endfunction
@@ -68,7 +68,7 @@ function! ag#AgGroup(ncontext, visualmode, fileregexp, args)
 
   silent! wincmd P
   if !&previewwindow
-    exe g:ag_nhandler
+    exe g:ag.nhandler
     execute  'resize ' . &previewheight
     set previewwindow
   endif
@@ -218,7 +218,7 @@ function! OpenFile(forceSplit)
   if line =~ '^\d\+:'
     let data = split(line,':')
     let pos = data[0]
-    if g:ag_goto_exact_line
+    if g:ag.goto_exact_line
       let pos += offset
     endif
     let col = data[1]
@@ -281,12 +281,12 @@ function! ag#Ag(cmd, args)
 
   " Format, used to manage column jump
   if a:cmd =~# '-g$'
-    let s:ag_format_backup=g:ag_format
-    let g:ag_format="%f"
+    let s:ag_format_backup=g:ag.format
+    let g:ag.format="%f"
   elseif exists("s:ag_format_backup")
-    let g:ag_format=s:ag_format_backup
-  elseif !exists("g:ag_format")
-    let g:ag_format="%f:%l:%c:%m"
+    let g:ag.format=s:ag_format_backup
+  elseif !exists("g:ag.format")
+    let g:ag.format="%f:%l:%c:%m"
   endif
 
   let l:grepprg_bak=&grepprg
@@ -294,11 +294,11 @@ function! ag#Ag(cmd, args)
   let l:t_ti_bak=&t_ti
   let l:t_te_bak=&t_te
   try
-    let &grepprg=g:ag_prg
-    let &grepformat=g:ag_format
+    let &grepprg=g:ag.prg
+    let &grepformat=g:ag.format
     set t_ti=
     set t_te=
-    if g:ag_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
+    if g:ag.working_path_mode ==? 'r' " Try to find the projectroot for current buffer
       let l:cwd_back = getcwd()
       let l:cwd = s:guessProjectRoot()
       try
@@ -327,18 +327,18 @@ function! ag#Ag(cmd, args)
 
   if l:match_count
     if a:cmd =~# '^l'
-      exe g:ag_lhandler
-      let l:apply_mappings = g:ag_apply_lmappings
+      exe g:ag.lhandler
+      let l:apply_mappings = g:ag.apply_lmappings
       let l:matches_window_prefix = 'l' " we're using the location list
     else
-      exe g:ag_qhandler
-      let l:apply_mappings = g:ag_apply_qmappings
+      exe g:ag.qhandler
+      let l:apply_mappings = g:ag.apply_qmappings
       let l:matches_window_prefix = 'c' " we're using the quickfix window
     endif
   endif
 
   " If highlighting is on, highlight the search keyword.
-  if exists('g:ag_highlight')
+  if exists('g:ag.highlight')
     let @/ = matchstr(a:args, "\\v(-)\@<!(\<)\@<=\\w+|['\"]\\zs.{-}\\ze['\"]")
     call feedkeys(":let &hlsearch=1 \| echo \<CR>", 'n')
   end
@@ -367,7 +367,7 @@ function! ag#Ag(cmd, args)
       " <C-w>J                                              Slam the quickfix/location list window against the bottom edge
       " :exe printf(":normal %d\<lt>c-w>_", b:height)<CR>   Restore the quickfix/location list window's height from before we opened the match
 
-      if g:ag_mapping_message && l:apply_mappings
+      if g:ag.mapping_message && l:apply_mappings
         echom "ag.vim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
       endif
     endif

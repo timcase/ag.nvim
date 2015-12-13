@@ -101,14 +101,24 @@ more information.
 ==============================================================================
 OPTIONS                                                            *ag-options*
 
-                                                                     *g:ag_prg*
+To change options, create empty dict beforehand and specify them one-by-one:
+  let g:ag = {}
+  let g:ag.opt1 = val1
+  ...
+
+Or you can specify desired options all at once
+  let g:ag = {'opt1': 'val1', ...}
+
+Skipped options will be filled by default values from |autoload/ag/opts.vim|.
+
+                                                                     *g:ag.prg*
 The location of the Ag program, and any options you want passed to it before
 searching. Default: "ag --vimgrep" (for parsable output). Example: >
-  let g:ag_prg="ag --vimgrep --smart-case"
+  let g:ag.prg="ag --vimgrep --smart-case"
 <
 Note: the `--vimgrep` option was added in Ag 0.25.0. If ag.vim detects that
 you're using a lower version, the following default will be used instead: >
-  let g:ag_prg="ag --column --nogroup --noheading"
+  let g:ag.prg="ag --column --nogroup --noheading"
 <
 This works around inconsistent behaviors in earlier Ag versions, but it is
 recommended that you upgrade if possible for a better experience. `--vimgrep`
@@ -116,76 +126,76 @@ supports multiple matches on the same line of text, for example.
 
 For background, see: https://github.com/rking/ag.vim/pull/88
 
-                                                       *g:ag_working_path_mode*
+                                                       *g:ag.working_path_mode*
 A mapping that describes where ag will be run. Default is the current working
 directory. Specifying 'r' as the argument will tell it to run from the project
 rootdirectory. For now any other mapping will result to the default.
 Example:
-  let g:ag_working_path_mode='r'
+  let g:ag.working_path_mode='r'
 
-                                                               *g:ag_highlight*
+                                                               *g:ag.highlight*
 If 1, highlight the search terms after searching. Default: 0. Example: >
-  let g:ag_highlight=1
+  let g:ag.highlight=1
 <
 
-                                                                  *g:ag_format*
+                                                                  *g:ag.format*
 Format to recognize the matches. See 'errorformat' for more info. Default:
 "%f" when searching for files, "%f:%l:%c:%m" if not otherwise set. For
-example, if your `g:ag_prg` is set to just "ag" (no column numbers in the
+example, if your `g:ag.prg` is set to just "ag" (no column numbers in the
 output, so when you jump to a match your cursor will be on the start of the
 line): >
-  let g:ag_format="%f:%l:%m"
+  let g:ag.format="%f:%l:%m"
 <
 
-                                                         *g:ag_apply_lmappings*
+                                                         *g:ag.apply_lmappings*
 Whether or not to add custom mappings to location list windows opened by this
 plugin. Only applies if you're using the location list. Default 1. Example: >
-  let g:ag_apply_lmappings=0
+  let g:ag.apply_lmappings=0
 <
 
-                                                         *g:ag_apply_qmappings*
+                                                         *g:ag.apply_qmappings*
 Whether or not to add custom mappings to quickfix windows opened by this
 plugin. Only applies if you're using the error list. Default 1. Example: >
-  let g:ag_apply_qmappings=0
+  let g:ag.apply_qmappings=0
 <
 
-                                                                *g:ag_lhandler*
+                                                                *g:ag.lhandler*
 A custom command used to open the location list after it's populated.
 Default: "botright lopen". You might want to set this to change where the
 location list is opened, or what size it is. Example: >
-  let g:ag_lhandler="topleft lopen"
+  let g:ag.lhandler="topleft lopen"
 <
 
-                                                                *g:ag_qhandler*
+                                                                *g:ag.qhandler*
 A custom command used to open the error list after it's populated. Default:
 "botright copen". You might want to set this to change where the quickfix
 window is opened, or what size it is. Example: >
-  let g:ag_qhandler="copen 20"
-                                                                *g:ag_nhandler*
+  let g:ag.qhandler="copen 20"
+                                                                *g:ag.nhandler*
 A custom command used to open the AgGroup list after it's populated. Default:
 "botright new". You might want to set this to change where it is opened.
 Example: >
-  let g:ag_nhandler="topleft new"
+  let g:ag.nhandler="topleft new"
 <
 
-                                                         *g:ag_mapping_message*
+                                                         *g:ag.mapping_message*
 Whether or not to show the message explaining the extra mappings that are
 added to the results list this plugin populates. This message is not shown if
-the mappings are not applied (see |g:ag_apply_qmappings| and
-|g:ag_apply_lmappings| for more info. Default 1. Example: >
-  let g:ag_mapping_message=0
+the mappings are not applied (see |g:ag.apply_qmappings| and
+|g:ag.apply_lmappings| for more info. Default 1. Example: >
+  let g:ag.mapping_message=0
 <
 
-                                                         *g:ag_goto_exact_line*
-When navigate to file behind search, if there's context, |g:ag_goto_exact_line|
+                                                         *g:ag.goto_exact_line*
+When navigate to file behind search, if there's context, |g:ag.goto_exact_line|
 jumps to exact line selected, instead of matched line. Default 0. Example: >
-  let g:ag_goto_exact_line=1
+  let g:ag.goto_exact_line=1
 <
 
-                                                     *g:ag_mappings_to_cmd_history*
+                                                     *g:ag.mappings_to_cmd_history*
 Every search issued from shortcuts in normal or visual mode, is added to
-history when |g:ag_mappings_to_cmd_history| is enabled. Default 0. Example: >
-  let g:ag_mappings_to_cmd_history=1
+history when |g:ag.mappings_to_cmd_history| is enabled. Default 0. Example: >
+  let g:ag.mappings_to_cmd_history=1
 <
 
 ==============================================================================
