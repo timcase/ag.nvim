@@ -14,25 +14,28 @@ catch /E117:/
   " echom "Err: function not found or 'kana/vim-operator-user' not installed"
 endtry
 
+fun! s:fc(...)
+  return call('ag#complete#file_fuzzy', a:000)
+endfun
 
 " NOTE: You must, of course, install ag / the_silver_searcher
-command! -bang -nargs=* -complete=file Ag           call ag#qf#search('grep<bang>',<q-args>)
-command! -bang -nargs=* -complete=file AgAdd        call ag#qf#search('grepadd<bang>', <q-args>)
-command! -bang -nargs=* -complete=file AgBuffer     call ag#paths#buffers('grep<bang>',<q-args>)
-command! -bang -nargs=* -complete=file AgFromSearch call ag#args#slash('grep<bang>', <q-args>)
-command! -bang -nargs=* -complete=file AgFile       call ag#qf#search('grep<bang> -g', <q-args>)
-command! -bang -nargs=* -complete=help AgHelp       call ag#paths#help('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc Ag           call ag#qf#search('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc AgAdd        call ag#qf#search('grepadd<bang>', <q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc AgBuffer     call ag#paths#buffers('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc AgFromSearch call ag#args#slash('grep<bang>', <q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc AgFile       call ag#qf#search('grep<bang> -g', <q-args>)
+command! -bang -nargs=* -complete=help            AgHelp       call ag#paths#help('grep<bang>',<q-args>)
 
-command! -bang -nargs=* -complete=file LAg          call ag#qf#search('lgrep<bang>', <q-args>)
-command! -bang -nargs=* -complete=file LAgAdd       call ag#qf#search('lgrepadd<bang>', <q-args>)
-command! -bang -nargs=* -complete=file LAgBuffer    call ag#paths#buffers('lgrep<bang>',<q-args>)
-command! -bang -nargs=* -complete=help LAgHelp      call ag#paths#help('lgrep<bang>',<q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc LAg          call ag#qf#search('lgrep<bang>', <q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc LAgAdd       call ag#qf#search('lgrepadd<bang>', <q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc LAgBuffer    call ag#paths#buffers('lgrep<bang>',<q-args>)
+command! -bang -nargs=* -complete=help            LAgHelp      call ag#paths#help('lgrep<bang>',<q-args>)
 
-command! -count                        AgRepeat     call ag#group#repeat(<count>)
-command! -count -nargs=*               AgGroup      call ag#group#search(<count>, 0, '', <q-args>) "deprecated
-command! -count -nargs=*               AgGroupFile  call ag#group#search(<count>, 0, <f-args>) "deprecated
-command! -count -nargs=*               Agg          call ag#group#search(<count>, 0, '', <q-args>)
-command! -count -nargs=*               AggFile      call ag#group#search(<count>, 0, <f-args>)
+command! -count                                    AgRepeat    call ag#group#repeat(<count>)
+command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#group#search(<count>, 0, '', <q-args>) "deprecated
+command! -count -nargs=* -complete=customlist,s:fc AgGroupFile call ag#group#search(<count>, 0, <f-args>) "deprecated
+command! -count -nargs=* -complete=customlist,s:fc Agg         call ag#group#search(<count>, 0, '', <q-args>)
+command! -count -nargs=* -complete=customlist,s:fc AggFile     call ag#group#search(<count>, 0, <f-args>)
 
 
 nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#group#tracked_search(v:count, 0)<CR>
