@@ -1,0 +1,32 @@
+let s:ag = {}
+let s:ag.bin = 'ag'
+let s:ag.ver = get(split(system(s:ag.bin.' --version'), "\_s"), 2, '')
+
+" --vimgrep (consistent output we can parse) is available from v0.25.0+
+let s:ag.prg = s:ag.bin . (s:ag.ver =~ '\v0\.%(\d|1\d|2[0-4])%(.\d+)?' ?
+      \ ' --vimgrep' : ' --column')
+
+let s:ag.qhandler = "botright copen"
+let s:ag.lhandler = "botright lopen"
+let s:ag.nhandler = "botright new"
+let s:ag.apply_qmappings = 1
+let s:ag.apply_lmappings = 1
+let s:ag.mapping_message = 1
+let s:ag.goto_exact_line = 0
+let s:ag.mappings_to_cmd_history = 0
+let s:ag.working_path_mode = 'c'
+
+
+
+function! ag#opts#init()
+  let g:ag = extend(get(g:, 'ag', {}), s:ag, 'keep')
+  if !executable(g:ag.bin)
+    throw "Binary '".g:ag.bin."' was not found in your $PATH. "
+        \."Check if the_silver_searcher is installed and available."
+  endif
+
+  for [k, v] in items(g:ag)
+    if !exists('g:ag_'.k) | let g:ag_{k}=v | endif
+    unlet k v
+  endfor
+endfunction

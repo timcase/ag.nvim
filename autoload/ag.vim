@@ -1,25 +1,3 @@
-" --vimgrep (consistent output we can parse) is available from version  0.25.0+
-let s:ag_isOld = get(split(system(g:ag_bin.' --version'), "\_s"), 2, '')
-      \ =~ '\v0\.%(\d|1\d|2[0-4])%(.\d+)?'
-
-let g:ag_options = extend(get(g:, 'ag_options', {}), {
-  \ 'prg': (g:ag_bin . (s:ag_isOld ? ' --vimgrep' : ' --column')),
-  \        'qhandler': "botright copen",
-  \        'lhandler': "botright lopen",
-  \        'nhandler': "botright new",
-  \ 'apply_qmappings': 1,
-  \ 'apply_lmappings': 1,
-  \ 'mapping_message': 1,
-  \ 'goto_exact_line': 0,
-  \ 'mappings_to_cmd_history': 0,
-  \ 'working_path_mode': 'c'
-\}, 'keep')
-
-for [k, v] in items(g:ag_options)
-  if !exists('g:ag_'.k) | let g:ag_{k}=v | endif
-  unlet k v
-endfor
-
 function! ag#AgBuffer(cmd, args)
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:files = []

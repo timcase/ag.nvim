@@ -2,13 +2,11 @@ if exists('g:loaded_ag') | finish | endif
 let s:cpo_save = &cpo
 set cpo&vim
 
-let g:ag_bin=get(g:, 'ag_bin', 'ag')
-if !executable(g:ag_bin)
-  echoe "Binary '".l:ag_bin."' was not found in your $PATH."
-        \."Check if the_silver_searcher is installed and available."
-  finish
-endif
-
+try
+  call ag#opts#init()
+catch
+  echom v:exception | finish
+endtry
 
 " NOTE: You must, of course, install ag / the_silver_searcher
 command! -bang -nargs=* -complete=file Ag call ag#Ag('grep<bang>',<q-args>)
