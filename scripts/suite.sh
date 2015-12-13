@@ -3,7 +3,7 @@
 cd $(dirname $(readlink -m ${0}))
 
 [[ -n "$TMPDIR" ]] || TMPDIR="$(dirname $(mktemp --dry-run --tmpdir))"
-T_DIR="$PWD"
+PJROOT="${PWD%/*}"
 # [[ "$EDITOR" =~ vim ]] || EDITOR=vim
 EDITOR=vim
 
@@ -37,8 +37,8 @@ get_deps() {
 }
 
 urun() { local file="$1" name="$2" cmd
-  cp -r "$T_DIR/fixture" . && bash "$T_DIR/${name}.sh" >/dev/null 2>&1
-  cmd="$EDITOR -i NONE -u NONE -U NONE -nNesS '$T_DIR/helper.vim'"
+  cp -r "$PJROOT/t/fixture" . && bash "$PJROOT/t/${name}.sh" >/dev/null 2>&1
+  cmd="$EDITOR -i NONE -u NONE -U NONE -nNesS '$PJROOT/scripts/helper.vim'"
   cmd+=" -c 'Vader!' -c 'echo\"\"\|qall!' -- '${file}'"
   if ! ((VERBOSE)); then cmd+=' 2>/dev/null'; else
     cmd+=" 2> >(echo;sed -n '/^Starting Vader/,\$p')"; fi
@@ -71,7 +71,7 @@ utest() {
 
 testsuite() { local NUM=0
   for rgx in "${@:-.*}"; do
-    for fl in "$T_DIR/tests"/*.vader; do
+    for fl in "$PJROOT/t/tests"/*.vader; do
       if [[ "${fl##*/}" =~ $rgx ]]
       then utest "$fl"; fi
     done

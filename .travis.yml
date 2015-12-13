@@ -38,7 +38,7 @@ cache:
 script:
   - ag --version
   - vim --version
-  - (cd t && ./suite.sh --verbose --clean)
+  - (cd scripts && ./suite.sh --verbose --clean)
 
 notifications:
   email:
