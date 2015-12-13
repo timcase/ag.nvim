@@ -44,18 +44,11 @@ Expect (1 file, 1 match):
   option|1 col 5| caSeIGnoRe
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Execute (Matched-only -o _PART_only):
-  Ag -o part
-
-Expect (1 file, 1 match):
-  option|2 col 4| part
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Execute (Multiple flags -Q -w singleword):
   Ag -Q -w 're.*x'
 
 Expect (1 file, 1 match):
-  option|3 col 1| re.*x
+  option|2 col 1| re.*x
 
 ================================
 Before:
