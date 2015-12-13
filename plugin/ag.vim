@@ -28,16 +28,16 @@ command! -bang -nargs=* -complete=file LAgAdd call ag#Ag('lgrepadd<bang>', <q-ar
 command! -bang -nargs=* -complete=file LAgBuffer call ag#AgBuffer('lgrep<bang>',<q-args>)
 command! -bang -nargs=* -complete=help LAgHelp call ag#AgHelp('lgrep<bang>',<q-args>)
 
-command! -count -nargs=*               AgGroup call     ag#AgGroup(<count>, 0, '', <q-args>) "deprecated
-command! -count -nargs=*               Agg call     ag#AgGroup(<count>, 0, '', <q-args>)
-command! -count -nargs=*               AgGroupFile call ag#AgGroup(<count>, 0, <f-args>) "deprecated
-command! -count -nargs=*               AggFile call ag#AgGroup(<count>, 0, <f-args>)
-command! -count                        AgGroupLast call ag#AgGroupLast(<count>)
+command! -count                        AgRepeat     call ag#group#repeat(<count>)
+command! -count -nargs=*               AgGroup      call ag#group#search(<count>, 0, '', <q-args>) "deprecated
+command! -count -nargs=*               AgGroupFile  call ag#group#search(<count>, 0, <f-args>) "deprecated
+command! -count -nargs=*               Agg          call ag#group#search(<count>, 0, '', <q-args>)
+command! -count -nargs=*               AggFile      call ag#group#search(<count>, 0, <f-args>)
 
 
-nnoremap <silent> <Plug>(ag-group)  :call ag#AgGroupShortCut(v:count, 0)<CR>
-xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#AgGroupShortCut(v:count, 1)<CR>
-nnoremap <silent> <Plug>(ag-group-last)  :call ag#AgGroupLast(v:count)<CR>
+nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#group#tracked_search(v:count, 0)<CR>
+xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#group#tracked_search(v:count, 1)<CR>
+nnoremap <silent> <Plug>(ag-repeat) :<C-u>call ag#group#repeat(v:count)<CR>
 " TODO: add <Plug> mappings for Ag* and LAg*
 
 
@@ -57,7 +57,7 @@ if !(exists("g:ag.no_default_mappings") && g:ag.no_default_mappings)
     \ ['nx', '<Leader>AH', '<Plug>(ag-loc-help)'],
     \
     \ ['nx', '<Leader>ag', '<Plug>(ag-group)'],
-    \ ['n',  '<Leader>ra', '<Plug>(ag-group-last)'],
+    \ ['n',  '<Leader>ra', '<Plug>(ag-repeat)'],
     \
     \ ['nx', '<Leader>ad', '<Plug>(operator-ag-qf)'],
     \ ['nx', '<Leader>Ad', '<Plug>(operator-ag-loc)'],

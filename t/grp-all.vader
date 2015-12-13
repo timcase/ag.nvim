@@ -50,13 +50,13 @@ Execute (history addition):
   :AgGroup "hoge" fixture
   "goto line
   ":execute "normal \<Space>"
-  :call NextFold()
+  :call ag#ctrl#NextFold()
   ":execute "normal \<Enter>"
-  :call OpenFile(0)
+  :call ag#ctrl#OpenFile(0)
   "move around
   :normal j
   "search with shortcut
   ":execute "normal \<Leader>ag"
   :execute "normal \<Plug>(ag-group)"
-  "expect search to be on history
-  :AssertEqual histget(":"), "Agg fuga"
+  "expect search to be on history  "FIXME?
+  :AssertEqual histget(":"), "Agg fixture"
