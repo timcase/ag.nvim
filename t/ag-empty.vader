@@ -7,8 +7,8 @@
 Execute (::Hold cwd fixture):
   cd fixture
 ================================
-Given (Current <cword>):
-  single
+Given (Current whole <cword>):
+  singleword
 
 Do (Empty in NORMAL):
   :Ag\<CR>
@@ -17,11 +17,41 @@ Expect (1 file, 1 match):
   space|1 col 1| singleword
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Given (One word VSEL):
+Given (Shifted whole <cword>):
+        singleword
+
+Do (Empty in NORMAL):
+  :Ag\<CR>
+
+Expect (1 file, 1 match):
+  space|1 col 1| singleword
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Given (NO Current partial <cword>):
+  single
+
+Do (Empty in NORMAL):
+  :Ag\<CR>
+
+Expect (1 file, 1 match):
+  single
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Given (Single word VSEL):
   multi
 
 Do (Empty in VISUAL):
   viw:\<C-u>Ag\<CR>
+
+Expect (1 file, 1 match):
+  space|2 col 1| multi word
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Given (Multi word VSEL):
+  multi word
+
+Do (Empty in VISUAL):
+  V:\<C-u>Ag\<CR>
 
 Expect (1 file, 1 match):
   space|2 col 1| multi word

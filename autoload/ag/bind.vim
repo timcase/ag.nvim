@@ -20,9 +20,26 @@ function! ag#bind#call(entry)
 endfunction
 
 
+function! ag#bind#fix_fargs(args)
+  if len(a:args) < 2 | return a:args | endif
+  let a = a:args
+  for i in range(0, len(a) - 2)
+    if (a[i] =~# '^".*[^"]$' && a[i+1] =~# '^[^"].*"$')
+    \||(a[i] =~# "^'.*[^']$" && a[i+1] =~# "^[^'].*'$")
+      let a[i] .= ' '.remove(a, i+1)
+    endif
+  endfor
+  return a
+endfunction
+
+
 " THINK: separate flags and regex?
 function! ag#bind#f(view, args, paths, cmd)
-  let l:args = ag#args#auto(a:args)
+  if !empty(a:args) && type(a:args)==type([])
+    let l:args = ag#bind#fix_fargs(a:args)
+  else
+    let l:args = ag#args#auto(a:args)
+  endif
   if empty(l:args) | echom "empty search" | return | endif
 
   let g:ag.last = {'view': ag#view#auto(a:view), 'args': l:args,

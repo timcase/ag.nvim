@@ -2,7 +2,8 @@
 function! ag#args#auto(args)
   " TODO:ADD: -range to commands to use: '<,'>Ag rgx and 11,87Ag rgx
   if !empty(a:args)
-    if type(a:args)==type([]) | return a:args | endif
+    " DEV: return args (regex+path...) constructed from multiple providers
+    " if type(a:args)==type([])
     if type(a:args)==type('') && exists('*ag#args#'.a:args)
       return ag#args#{a:args}()
     endif
