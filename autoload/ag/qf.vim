@@ -1,4 +1,4 @@
-function! ag#qf#search(cmd, args)
+function! ag#qf#search(args, cmd)
   let l:grepargs = a:args
 
   call ag#qf#exec(a:cmd, l:grepargs)

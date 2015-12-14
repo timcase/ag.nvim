@@ -1,22 +1,21 @@
 function! ag#bind#escape(arg)
-  let e = escape(a:arg, '%#')
-  if e =~# '^".*"$' || e =~# "^'.*'$"
-    return escape(e, '%#')  " Double %# escaping
+  if a:arg =~# '^".*"$' || a:arg =~# "^'.*'$"
+    return escape(a:arg, '%#')    " Escapes file substitution %/#
   else
-    return shellescape(e)
+    return shellescape(a:arg, 1)  " Additionally wraps in single quotes
   endif
 endfunction
 
 
 function! ag#bind#join(args)
-  return join(map(a:args, 'ag#bind#escape(v:val)'))
+  return join(map(a:args, 'ag#bind#escape(v:val)'), ' ')
 endfunction
 
 
 function! ag#bind#call(entry)
   " FIND: another way -- to execute args list directly without join?
   let l:args = ag#bind#join(a:entry.args + a:entry.paths)
-  call {a:entry.view}(a:entry.cmd, l:args)
+  call {a:entry.view}(l:args, a:entry.cmd)
 endfunction
 
 
