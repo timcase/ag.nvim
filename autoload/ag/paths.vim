@@ -1,27 +1,27 @@
-function! ag#paths#buffers(cmd, args)
+" Providers of search targets
+function! ag#paths#auto(paths)
+  if !empty(a:paths)
+    if type(a:paths)==type([]) | return a:paths | endif
+    if type(a:paths)==type('') && exists('*ag#paths#'.a:paths)
+      return ag#paths#{a:paths}()
+    endif
+  endif
+  return []
+endfunction
+
+
+function! ag#paths#lwd()
+  return [expand('%:p', 1)]
+endfunction
+
+
+function! ag#paths#buffers()
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  let l:files = []
-  for buf in l:bufs
-    let l:file = fnamemodify(bufname(buf), ':p')
-    if !isdirectory(l:file)
-      call add(l:files, l:file)
-    endif
-  endfor
-  call ag#Ag(a:cmd, a:args . ' ' . join(l:files, ' '))
+  let l:files = map(l:bufs, 'fnamemodify(bufname(v:val), ":p")')
+  return filter(l:files, '!isdirectory(v:val)')
 endfunction
 
-function! s:GetDocLocations()
-  let dp = ''
-  for p in split(&runtimepath,',')
-    let p = p.'doc/'
-    if isdirectory(p)
-      let dp = p.'*.txt '.dp
-    endif
-  endfor
-  return dp
-endfunction
 
-function! ag#paths#help(cmd,args)
-  let args = a:args.' '.s:GetDocLocations()
-  call ag#Ag(a:cmd,args)
+function! ag#paths#help()
+  return globpath(&runtimepath, 'doc/*.txt', 1, 1)
 endfunction

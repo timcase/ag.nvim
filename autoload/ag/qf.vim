@@ -1,15 +1,5 @@
 function! ag#qf#search(cmd, args)
-  " If no pattern is provided, search for the word under the cursor
-  if empty(a:args)
-    let l:grepargs = expand("<cword>")
-  else
-    let l:grepargs = a:args
-  end
-
-  if empty(l:grepargs)
-    echo "Usage: ':Ag {pattern}' (or just :Ag to search for the word under the cursor). See ':help :Ag' for more information."
-    return
-  endif
+  let l:grepargs = a:args
 
   call ag#qf#exec(a:cmd, l:grepargs)
 

@@ -6,6 +6,7 @@ let s:ag.ver = get(split(system(s:ag.bin.' --version'), "\_s"), 2, '')
 let s:ag.prg = s:ag.bin . (s:ag.ver =~ '\v0\.%(\d|1\d|2[0-4])%(.\d+)?' ?
       \ ' --vimgrep' : ' --column')
 
+let s:ag.last = {}
 let s:ag.qhandler = "botright copen"
 let s:ag.lhandler = "botright lopen"
 let s:ag.nhandler = "botright new"

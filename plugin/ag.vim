@@ -19,17 +19,18 @@ fun! s:fc(...)
 endfun
 
 " NOTE: You must, of course, install ag / the_silver_searcher
-command! -bang -nargs=* -complete=customlist,s:fc Ag           call ag#qf#search('grep<bang>',<q-args>)
-command! -bang -nargs=* -complete=customlist,s:fc AgAdd        call ag#qf#search('grepadd<bang>', <q-args>)
-command! -bang -nargs=* -complete=customlist,s:fc AgBuffer     call ag#paths#buffers('grep<bang>',<q-args>)
-command! -bang -nargs=* -complete=customlist,s:fc AgFromSearch call ag#args#slash('grep<bang>', <q-args>)
-command! -bang -nargs=* -complete=customlist,s:fc AgFile       call ag#qf#search('grep<bang> -g', <q-args>)
-command! -bang -nargs=* -complete=help            AgHelp       call ag#paths#help('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc Ag           call ag#bind#f('qf', [<f-args>], [], 'grep<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc AgAdd        call ag#bind#f('qf', [<f-args>], [], 'grepadd<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc AgBuffer     call ag#bind#f('qf', [<f-args>], 'buffers', 'grep<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc AgFromSearch call ag#bind#f('qf', 'slash', [<f-args>], 'grep<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc AgFile       call ag#bind#f('qf', [<f-args>], [], 'grep<bang> -g')
+command! -bang -nargs=* -complete=help            AgHelp       call ag#bind#f('qf', [<f-args>], 'help', 'grep<bang>')
 
-command! -bang -nargs=* -complete=customlist,s:fc LAg          call ag#qf#search('lgrep<bang>', <q-args>)
-command! -bang -nargs=* -complete=customlist,s:fc LAgAdd       call ag#qf#search('lgrepadd<bang>', <q-args>)
-command! -bang -nargs=* -complete=customlist,s:fc LAgBuffer    call ag#paths#buffers('lgrep<bang>',<q-args>)
-command! -bang -nargs=* -complete=help            LAgHelp      call ag#paths#help('lgrep<bang>',<q-args>)
+command! -bang -nargs=* -complete=customlist,s:fc LAg          call ag#bind#f('loc', [<f-args>], [], 'grep<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc LAgAdd       call ag#bind#f('loc', [<f-args>], [], 'grepadd<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc LAgBuffer    call ag#bind#f('loc', [<f-args>], 'buffers', 'grep<bang>')
+command! -bang -nargs=* -complete=customlist,s:fc LAgFile      call ag#bind#f('loc', [<f-args>], [], 'grep<bang> -g')
+command! -bang -nargs=* -complete=help            LAgHelp      call ag#bind#f('loc', [<f-args>], 'help', 'grep<bang>')
 
 command! -count                                    AgRepeat    call ag#group#repeat(<count>)
 command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#group#search(<count>, 0, '', <q-args>) "deprecated
