@@ -33,10 +33,10 @@ command! -bang -nargs=* -complete=customlist,s:fc LAgFile      call ag#bind#f('l
 command! -bang -nargs=* -complete=help            LAgHelp      call ag#bind#f('loc', [<f-args>], 'help', 'grep<bang>')
 
 command! -count                                    AgRepeat    call ag#group#repeat(<count>)
-command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#group#search(<count>, 0, '', <q-args>) "deprecated
-command! -count -nargs=* -complete=customlist,s:fc AgGroupFile call ag#group#search(<count>, 0, <f-args>) "deprecated
-command! -count -nargs=* -complete=customlist,s:fc Agg         call ag#group#search(<count>, 0, '', <q-args>)
-command! -count -nargs=* -complete=customlist,s:fc AggFile     call ag#group#search(<count>, 0, <f-args>)
+command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#bind#f('grp', [<f-args>], [], '') "deprecated
+command! -count -nargs=* -complete=customlist,s:fc AgGroupFile call ag#bind#f('grp', [<f-args>], [], -1) "deprecated
+command! -count -nargs=* -complete=customlist,s:fc Agg         call ag#bind#f('grp', [<f-args>], [], '')
+command! -count -nargs=* -complete=customlist,s:fc AggFile     call ag#bind#f('grp', [<f-args>], [], -1)
 
 
 nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#group#tracked_search(v:count, 0)<CR>

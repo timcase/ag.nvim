@@ -32,17 +32,21 @@ function! ag#bind#fix_fargs(args)
 endfunction
 
 
-" THINK: separate flags and regex?
+" NEED:DEV: more sane api -- THINK: how to separate flags, regex, paths?
 function! ag#bind#f(view, args, paths, cmd)
   if !empty(a:args) && type(a:args)==type([])
     let l:args = ag#bind#fix_fargs(a:args)
   else
     let l:args = ag#args#auto(a:args)
   endif
+
+  " REMOVE: temporary args splitter to unify api
+  let l:cmd = (type(a:cmd)==type(0) ? remove(l:args, a:cmd) : a:cmd)
+
   if empty(l:args) | echom "empty search" | return | endif
 
   let g:ag.last = {'view': ag#view#auto(a:view), 'args': l:args,
-        \ 'paths': ag#paths#auto(a:paths), 'cmd': a:cmd}
+        \ 'paths': ag#paths#auto(a:paths), 'cmd': l:cmd}
 
   call ag#bind#call(g:ag.last)
 endfunction

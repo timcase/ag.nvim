@@ -1,56 +1,20 @@
-function! s:VisualSelection()
-  let selection = ""
-  try
-    let a_save = @a
-    normal! gv"ay
-    let selection = @a
-  finally
-    let @a = a_save
-  endtry
-  return selection
-endfunction
-
 let g:last_aggroup=""
 
 function! ag#group#repeat(ncontext)
   call ag#group#search(a:ncontext, 0, '', g:last_aggroup)
 endfunction
 
-function! s:GetArgs(ncontext, visualmode, args)
-  if !empty(a:args)
-    let l:grepargs = a:args
-  else
-    if a:visualmode
-      let l:grepargs = s:VisualSelection()
-    else
-      let l:grepargs = ""
-    endif
-    if empty(l:grepargs)
-      let l:grepargs = expand("<cword>")
-      if empty(l:grepargs)
-        let l:grepargs = g:last_aggroup
-      endif
-    else
-      let l:grepargs = '"' . l:grepargs . '"'
-    endif
-  endif
-  return l:grepargs
-endfunction
-
 function! ag#group#tracked_search(ncontext, visualmode)
-  call ag#group#search(a:ncontext, a:visualmode, '', '')
+  call ag#bind#f('grp', [], [], '')
   if g:ag.mappings_to_cmd_history
      call histadd(":", "Agg" . " " . g:last_aggroup)
   endif
 endfunction
 
-function! ag#group#search(ncontext, visualmode, fileregexp, args)
-  let l:grepargs = s:GetArgs(a:ncontext, a:visualmode, a:args)
-
-  if empty(l:grepargs)
-     echo "empty search"
-     return
-  endif
+function! ag#group#search(args, frgx)
+  let l:grepargs = a:args
+  let fileregexp = (a:frgx==#'' ?'': '-G '.a:frgx)
+  let context = (v:count<1 ?'': '-C '.v:count)
 
   let g:last_aggroup = l:grepargs
 
@@ -67,22 +31,8 @@ function! ag#group#search(ncontext, visualmode, fileregexp, args)
 
   setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nowrap
 
-  let context = ''
-  if a:ncontext > 0
-    let context = '-C' . a:ncontext
-  endif
-
-  if empty(a:fileregexp)
-    let fileregexp = ''
-  else
-    let fileregexp = '-G' . a:fileregexp
-  endif
-
-  let l:grepargs = substitute(l:grepargs, '#', '\\#','g')
-  let l:grepargs = substitute(l:grepargs, '%', '\\%','g')
   "--vimgrep doesn't work well here
-  let ag_prg = 'ag'
-  execute 'silent read !' . ag_prg . ' -S --group --column ' . context . ' ' . fileregexp . ' ' . l:grepargs
+  execute 'silent read !' . g:ag.bin . ' -S --group --column ' . context . ' ' . fileregexp . ' ' . l:grepargs
 
   setfiletype ag
   " RFC: move into 'ftplugin/ag.vim', but too tightly linked with l:grepargs
@@ -98,9 +48,11 @@ function! ag#group#search(ncontext, visualmode, fileregexp, args)
   if hlexists('agSearch')
     silent syn clear agSearch
   endif
-  if l:grepargs =~ '^"'
+  if l:grepargs =~# '^"'
     "detect "find me" file1 file2
     let l:grepargs = split(l:grepargs, '"')[0]
+  elseif l:grepargs =~# "^'"
+    let l:grepargs = split(l:grepargs, "'")[0]
   else
     let l:grepargs = split(l:grepargs, '\s\+')[0]
   endif

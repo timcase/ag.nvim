@@ -59,4 +59,4 @@ Execute (history addition):
   ":execute "normal \<Leader>ag"
   :execute "normal \<Plug>(ag-group)"
   "expect search to be on history  "FIXME?
-  :AssertEqual histget(":"), "Agg fixture"
+  :AssertEqual histget(":"), "Agg '-Qw' 'fixture'"
