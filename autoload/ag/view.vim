@@ -8,13 +8,18 @@ function! ag#view#auto(func)
 endfunction
 
 
-function! ag#view#qf(args, cmd)
-  call ag#qf#search(a:args, a:cmd)
+function! s:qfcmd(m)
+  return (a:m=~#'+' ? 'add' : (a:m=~#'!' ?'': 'get')).'expr'
 endfunction
 
 
-function! ag#view#loc(args, cmd)
-  call ag#qf#search(a:args, 'l'.a:cmd)
+function! ag#view#qf(args, m)
+  call ag#qf#search(a:args, 'c'.s:qfcmd(a:m))
+endfunction
+
+
+function! ag#view#loc(args, m)
+  call ag#qf#search(a:args, 'l'.s:qfcmd(a:m))
 endfunction
 
 

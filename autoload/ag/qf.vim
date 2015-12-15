@@ -46,8 +46,16 @@ endfunction
 
 
 function! ag#qf#run(cmd, args)
-  silent! execute a:cmd . " " . escape(a:args, '|')
+  let l:efm_old = &efm
+  let l:cmdline = g:ag.prg.' '.escape(a:args, '|')
+  try
+    set errorformat=%f:%l:%c:%m,%f
+    silent! exec a:cmd." systemlist(l:cmdline)"
+  finally
+    let &efm=l:efm_old
+  endtry
 endfunction
+
 
 function! s:lcd(f, ...)
   let l:cwd_back = getcwd()
@@ -64,35 +72,9 @@ endfunction
 
 
 function! ag#qf#exec(cmd, args)
-  " Format, used to manage column jump
-  if a:cmd =~# '-g$'
-    let s:ag_format_backup=g:ag.format
-    let g:ag.format="%f"
-  elseif exists("s:ag_format_backup")
-    let g:ag.format=s:ag_format_backup
-  elseif !exists("g:ag.format")
-    let g:ag.format="%f:%l:%c:%m"
+  if g:ag.working_path_mode ==? 'r'
+    call s:lcd(ag#qf#run, a:cmd, a:args)
+  else
+    call ag#qf#run(a:cmd, a:args)
   endif
-
-  let l:grepprg_bak=&grepprg
-  let l:grepformat_bak=&grepformat
-  let l:t_ti_bak=&t_ti
-  let l:t_te_bak=&t_te
-  try
-    let &grepprg=g:ag.prg
-    let &grepformat=g:ag.format
-    set t_ti=
-    set t_te=
-    " Try to find the projectroot for current buffer
-    if g:ag.working_path_mode ==? 'r'
-      call s:lcd(ag#qf#run, a:cmd, a:args)
-    else
-      call ag#qf#run(a:cmd, a:args)
-    endif
-  finally
-    let &grepprg=l:grepprg_bak
-    let &grepformat=l:grepformat_bak
-    let &t_ti=l:t_ti_bak
-    let &t_te=l:t_te_bak
-  endtry
 endfunction

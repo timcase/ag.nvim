@@ -20,7 +20,9 @@ function! ag#group#search(args, frgx)
 
   let fileregexp = (a:frgx==#'' ?'': '-G '.a:frgx)
   let context = (v:count<1 ?'': '-C '.v:count)
-  execute 'silent read!'.g:ag.bin.' -S --group --column '.fileregexp.' '.context.' '.a:args
+  let l:cmdline = g:ag.bin.' -S --group --column '.fileregexp.' '.context.' '.a:args
+  silent! put = systemlist(l:cmdline)
+  1delete _
   setlocal nomodifiable
 
   " NOTE: no need to escape, as after shellescape() it has embedded single
