@@ -16,6 +16,7 @@ let s:ag.mapping_message = 1
 let s:ag.goto_exact_line = 0
 let s:ag.mappings_to_cmd_history = 0
 let s:ag.working_path_mode = 'c'
+let s:ag.root_markers = ['.rootdir', '.git/', '.hg/', '.svn/', 'bzr', '_darcs', 'build.xml']
 
 
 

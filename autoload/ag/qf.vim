@@ -45,25 +45,6 @@ function! ag#qf#search(args, cmd)
 endfunction
 
 
-function! s:guessProjectRoot()
-  let l:splitsearchdir = split(getcwd(), "/")
-
-  while len(l:splitsearchdir) > 2
-    let l:searchdir = '/'.join(l:splitsearchdir, '/').'/'
-    for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
-      " found it! Return the dir
-      if filereadable(l:searchdir.l:marker) || isdirectory(l:searchdir.l:marker)
-        return l:searchdir
-      endif
-    endfor
-    let l:splitsearchdir = l:splitsearchdir[0:-2] " Splice the list to get rid of the tail directory
-  endwhile
-
-  " Nothing found, fallback to current working dir
-  return getcwd()
-endfunction
-
-
 function! ag#qf#exec(cmd, args)
   " Format, used to manage column jump
   if a:cmd =~# '-g$'
@@ -86,7 +67,7 @@ function! ag#qf#exec(cmd, args)
     set t_te=
     if g:ag.working_path_mode ==? 'r' " Try to find the projectroot for current buffer
       let l:cwd_back = getcwd()
-      let l:cwd = s:guessProjectRoot()
+      let l:cwd = ag#paths#pjroot('nearest')
       try
         exe "lcd ".l:cwd
       catch
