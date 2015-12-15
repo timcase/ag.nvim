@@ -1,13 +1,7 @@
-highlight link agLine LineNr
-highlight link agFile Question
-highlight link agSearch Todo
-highlight link agLineContext Constant
-
 setlocal foldmethod=expr
 setlocal foldexpr=ag#ctrl#FoldAg()
 setlocal foldcolumn=2
 1
-setlocal nomodifiable
 
 noremap <silent> <buffer> o       zaj
 noremap <silent> <buffer> <Space> :call ag#ctrl#NextFold()<CR>
