@@ -45,6 +45,24 @@ function! ag#qf#search(args, cmd)
 endfunction
 
 
+function! ag#qf#run(cmd, args)
+  silent! execute a:cmd . " " . escape(a:args, '|')
+endfunction
+
+function! s:lcd(f, ...)
+  let l:cwd_back = getcwd()
+  let l:cwd = ag#paths#pjroot('nearest')
+  try
+    exe "lcd ".l:cwd
+  catch
+    echom 'Failed to change directory to:'.l:cwd
+  finally
+    call call(f, a:000)
+    exe "lcd ".l:cwd_back
+  endtry
+endfunction
+
+
 function! ag#qf#exec(cmd, args)
   " Format, used to manage column jump
   if a:cmd =~# '-g$'
@@ -65,19 +83,11 @@ function! ag#qf#exec(cmd, args)
     let &grepformat=g:ag.format
     set t_ti=
     set t_te=
-    if g:ag.working_path_mode ==? 'r' " Try to find the projectroot for current buffer
-      let l:cwd_back = getcwd()
-      let l:cwd = ag#paths#pjroot('nearest')
-      try
-        exe "lcd ".l:cwd
-      catch
-        echom 'Failed to change directory to:'.l:cwd
-      finally
-        silent! execute a:cmd . " " . escape(a:args, '|')
-        exe "lcd ".l:cwd_back
-      endtry
-    else " Someone chose an undefined value or 'c' so we revert to the default
-      silent! execute a:cmd . " " . escape(a:args, '|')
+    " Try to find the projectroot for current buffer
+    if g:ag.working_path_mode ==? 'r'
+      call s:lcd(ag#qf#run, a:cmd, a:args)
+    else
+      call ag#qf#run(a:cmd, a:args)
     endif
   finally
     let &grepprg=l:grepprg_bak
