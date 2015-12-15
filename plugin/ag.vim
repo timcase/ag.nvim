@@ -32,16 +32,16 @@ command! -bang -nargs=* -complete=customlist,s:fc LAgBuffer    call ag#bind#f('l
 command! -bang -nargs=* -complete=customlist,s:fc LAgFile      call ag#bind#f('loc', [<f-args>], [], 'grep<bang> -g')
 command! -bang -nargs=* -complete=help            LAgHelp      call ag#bind#f('loc', [<f-args>], 'help', 'grep<bang>')
 
-command! -count                                    AgRepeat    call ag#group#repeat(<count>)
+command! -count                                    AgRepeat    call ag#bind#repeat()
 command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#bind#f('grp', [<f-args>], [], '') "deprecated
 command! -count -nargs=* -complete=customlist,s:fc AgGroupFile call ag#bind#f('grp', [<f-args>], [], -1) "deprecated
 command! -count -nargs=* -complete=customlist,s:fc Agg         call ag#bind#f('grp', [<f-args>], [], '')
 command! -count -nargs=* -complete=customlist,s:fc AggFile     call ag#bind#f('grp', [<f-args>], [], -1)
 
 
-nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#group#tracked_search(v:count, 0)<CR>
-xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#group#tracked_search(v:count, 1)<CR>
-nnoremap <silent> <Plug>(ag-repeat) :<C-u>call ag#group#repeat(v:count)<CR>
+nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#bind#f_tracked('Agg', 'grp', [], [], '')<CR>
+xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#bind#f_tracked('Agg', 'grp', [], [], '')<CR>
+nnoremap <silent> <Plug>(ag-repeat) :<C-u>call ag#bind#repeat()<CR>
 " TODO: add <Plug> mappings for Ag* and LAg*
 
 

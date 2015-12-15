@@ -1,22 +1,7 @@
-let g:last_aggroup=""
-
-function! ag#group#repeat(ncontext)
-  call ag#group#search(a:ncontext, 0, '', g:last_aggroup)
-endfunction
-
-function! ag#group#tracked_search(ncontext, visualmode)
-  call ag#bind#f('grp', [], [], '')
-  if g:ag.mappings_to_cmd_history
-     call histadd(":", "Agg" . " " . g:last_aggroup)
-  endif
-endfunction
-
 function! ag#group#search(args, frgx)
   let l:grepargs = a:args
   let fileregexp = (a:frgx==#'' ?'': '-G '.a:frgx)
   let context = (v:count<1 ?'': '-C '.v:count)
-
-  let g:last_aggroup = l:grepargs
 
   silent! wincmd P
   if !&previewwindow

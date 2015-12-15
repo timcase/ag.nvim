@@ -19,6 +19,12 @@ function! ag#bind#call(entry)
 endfunction
 
 
+function! ag#bind#repeat()
+  if empty(g:ag.last) | echom "nothing to repeat" | return | endif
+  call ag#bind#call(g:ag.last)
+endfunction
+
+
 function! ag#bind#fix_fargs(args)
   if len(a:args) < 2 | return a:args | endif
   let a = a:args
@@ -49,4 +55,12 @@ function! ag#bind#f(view, args, paths, cmd)
         \ 'paths': ag#paths#auto(a:paths), 'cmd': l:cmd}
 
   call ag#bind#call(g:ag.last)
+endfunction
+
+
+function! ag#bind#f_tracked(cmd, ...)
+  call call('ag#bind#f', a:000)
+  if g:ag.mappings_to_cmd_history
+     call histadd(":", a:cmd.' '.ag#bind#join(g:ag.last.args + g:ag.last.paths))
+  endif
 endfunction
