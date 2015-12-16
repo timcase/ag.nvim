@@ -21,7 +21,7 @@ function! ag#group#search(args, frgx)
   let fileregexp = (a:frgx==#'' ?'': '-G '.a:frgx)
   let context = (v:count<1 ?'': '-C '.v:count)
   let l:cmdline = g:ag.bin.' -S --group --column '.fileregexp.' '.context.' '.a:args
-  silent! put = systemlist(l:cmdline)
+  call ag#bind#populate('put =', l:cmdline)
   1delete _
   setlocal nomodifiable
 

@@ -12,6 +12,19 @@ function! ag#bind#join(args)
 endfunction
 
 
+if exists('*systemlist')  " ALT: has('patch-7.4.248')
+  " NOTE: when empty, returns '' instead of []
+  exe "fun! s:sh(_)\nreturn systemlist(a:_)\nendf"
+else
+  " DEV: for system() add arg 'ag --print0' and split lines at SOH (0x01)
+  exe "fun! s:sh(_)\nreturn split(system(a:_),'\\n')\nendf"
+endif
+
+function! ag#bind#populate(consumer, shellcmd)
+  silent exec a:consumer.' s:sh(a:shellcmd)'
+endfunction
+
+
 function! ag#bind#call(entry)
   " FIND: another way -- to execute args list directly without join?
   let l:args = ag#bind#join(a:entry.args + a:entry.paths)

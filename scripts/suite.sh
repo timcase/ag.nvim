@@ -36,9 +36,10 @@ show() {
 get_deps() {
   local url="https://github.com/junegunn/vader.vim"
   local vader="$TMPDIR/${url##*/}"
+  local clone="git clone -b master --depth=1 $url"
   (($CLEAN)) && rm -rf "$vader"
-  [[ -d "$vader" ]] || (cd "${vader%/*}" &&
-    git clone -b master --single-branch --depth=1 "$url" && echo)
+  [[ -d "$vader" ]] || (cd "${vader%/*}" && \
+      $clone --single-branch || $clone && echo)
 }
 
 urun() { local file="$1" name="$2" cmd

@@ -1,7 +1,6 @@
 function! ag#qf#search(args, cmd)
-  let l:grepargs = a:args
 
-  call ag#qf#exec(a:cmd, l:grepargs)
+  call ag#qf#exec(a:cmd, a:args)
 
   if a:cmd =~# '^l'
     let l:match_count = len(getloclist(winnr()))
@@ -47,10 +46,9 @@ endfunction
 
 function! ag#qf#run(cmd, args)
   let l:efm_old = &efm
-  let l:cmdline = g:ag.prg.' '.escape(a:args, '|')
   try
     set errorformat=%f:%l:%c:%m,%f
-    silent! exec a:cmd." systemlist(l:cmdline)"
+    call ag#bind#populate(a:cmd, g:ag.prg.' '.a:args)
   finally
     let &efm=l:efm_old
   endtry
