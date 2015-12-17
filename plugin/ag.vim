@@ -33,19 +33,35 @@ command! -bang -nargs=* -complete=customlist,s:fc LAgFile      call ag#bind#f('l
 command! -bang -nargs=* -complete=help            LAgHelp      call ag#bind#f('loc', [<f-args>], 'help', '<bang>')
 
 command! -count                                    AgRepeat    call ag#bind#repeat()
-command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#bind#f('grp', [<f-args>], [], '') "deprecated
-command! -count -nargs=* -complete=customlist,s:fc AgGroupFile call ag#bind#f('grp', [<f-args>], [], -1) "deprecated
-command! -count -nargs=* -complete=customlist,s:fc Agg         call ag#bind#f('grp', [<f-args>], [], '')
-command! -count -nargs=* -complete=customlist,s:fc AggFile     call ag#bind#f('grp', [<f-args>], [], -1)
+command! -count -nargs=* -complete=customlist,s:fc AgGroup     call ag#bind#f('grp', [<f-args>], [], '')
+command! -count -nargs=* -complete=customlist,s:fc AgGroupFile call ag#bind#f('grp', [<f-args>], [], -1)
 
 
-nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#bind#f_tracked('Agg', 'grp', [], [], '')<CR>
-xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#bind#f_tracked('Agg', 'grp', [], [], '')<CR>
+if !g:ag.no_abbreviations
+  cnoreabbrev ag   Ag
+  cnoreabbrev aga  AgAdd
+  cnoreabbrev agb  AgBuffer
+  cnoreabbrev ags  AgFromSearch
+  cnoreabbrev agf  AgFile
+  cnoreabbrev agh  AgHelp
+
+  cnoreabbrev agl  LAg
+  cnoreabbrev agbl LAgBuffer
+  cnoreabbrev agfl AgFile
+
+  cnoreabbrev agr  AgRepeat
+  cnoreabbrev agg  AgGroup
+  cnoreabbrev aggf AgGroupFile
+endif
+
+
 nnoremap <silent> <Plug>(ag-repeat) :<C-u>call ag#bind#repeat()<CR>
+nnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#bind#f_tracked('AgGroup', 'grp', [], [], '')<CR>
+xnoremap <silent> <Plug>(ag-group)  :<C-u>call ag#bind#f_tracked('AgGroup', 'grp', [], [], '')<CR>
 " TODO: add <Plug> mappings for Ag* and LAg*
 
 
-if !(exists("g:ag.no_default_mappings") && g:ag.no_default_mappings)
+if !g:ag.no_default_mappings
   let s:ag_mappings = [
     \ ['nx', '<Leader>af', '<Plug>(ag-qf)'],
     \ ['nx', '<Leader>aa', '<Plug>(ag-qf-add)'],
