@@ -63,7 +63,7 @@ function! ag#ctrl#OpenFile(forceSplit)
 
     if empty(line)
       if increment == -1
-        echom 'Cannot find filefor match'
+        echom 'Cannot find file for match'
         break
       else
         let increment = -1
@@ -100,7 +100,11 @@ function! ag#ctrl#OpenFile(forceSplit)
       let winnr = get(avaliable_windows, 0)
       exe winnr . "wincmd w"
     endif
-    exe open_command . ' +' . pos . ' ' . filename
+    if bufname('%') == filename
+      exe pos 
+    else
+      exe open_command . ' +' . pos . ' ' . filename
+    endif
     exe 'normal ' . col . '|'
     exe 'normal zv'
   endif
