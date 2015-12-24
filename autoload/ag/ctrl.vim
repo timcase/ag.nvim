@@ -87,9 +87,17 @@ function! ag#ctrl#OpenFile(forceSplit)
       let filename = getline(curpos - 1)
     endwhile
     let filename = getline(curpos)
-    let avaliable_windows = map(filter(range(0, bufnr('$')), 'bufwinnr(v:val)>=0 && buflisted(v:val)'), 'bufwinnr(v:val)')
+    let buffers_from_windows = map(range(1, winnr('$')), 'winbufnr(v:val)')
+    let match_window = map(filter(copy(buffers_from_windows), 'bufname(v:val) == filename'), 'bufwinnr(v:val)')
+    let winnr = 0
+    if empty(match_window)
+       let avaliable_windows = map(filter(copy(buffers_from_windows), 'buflisted(v:val)'), 'bufwinnr(v:val)')
+       let winnr = get(avaliable_windows, 0)
+    else
+       let winnr = get(match_window, 0)
+    endif
     let open_command = "edit"
-    if a:forceSplit || empty(avaliable_windows)
+    if a:forceSplit || winnr == 0
       if a:forceSplit > 1
         wincmd k
         let open_command = "vertical leftabove vsplit"
@@ -97,9 +105,11 @@ function! ag#ctrl#OpenFile(forceSplit)
         let open_command = "split"
       endif
     else
-      let winnr = get(avaliable_windows, 0)
       exe winnr . "wincmd w"
     endif
+
+
+    
     if bufname('%') == filename
       exe pos 
     else
