@@ -147,10 +147,10 @@ function! s:handleOutput() abort
     endif
 
     " If highlighting is on, highlight the search keyword.
-    if exists('g:ag_highlight')
-      let @/ = matchstr(s:args, "\\v(-)\@<!(\<)\@<=\\w+|['\"]\\zs.{-}\\ze['\"]")
-      call feedkeys(":let &hlsearch=1 \| echo \<CR>", 'n')
-    end
+    " if exists('g:ag_highlight')
+    "   let @/ = matchstr(s:args, "\\v(-)\@<!(\<)\@<=\\w+|['\"]\\zs.{-}\\ze['\"]")
+    "   call feedkeys(":let &hlsearch=1 \| echo \<CR>", 'n')
+    " end
 
     redraw! " Regular vim needs some1 to tell it to redraw
 
